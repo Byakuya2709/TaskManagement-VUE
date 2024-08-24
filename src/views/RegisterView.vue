@@ -4,22 +4,23 @@
 
     <!-- Modal to enter OTP -->
     <div v-if="showOtpModal" class="modal" style="display: block; background-color: rgba(0, 0, 0, 0.5);">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Nhập mã OTP</h5>
-        <button type="button" class="close" @click="closeModal">&times;</button>
-      </div>
-      <div class="modal-body">
-        <input v-model="otp" type="text" class="form-control" placeholder="Nhập mã xác thực" />
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary" @click="verifyOtp">Xác nhận</button>
-        <button type="button" class="btn btn-secondary" @click="closeModal">Đóng</button>
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Nhập mã OTP</h5>
+            <button type="button" class="close" @click="closeModal">&times;</button>
+          </div>
+          <div class="modal-body">
+            <input v-model="otp" type="text" class="form-control" placeholder="Nhập mã xác thực" />
+            <p v-if="otpError" class="text-danger mt-1">{{ otpError }}</p> <!-- Display OTP error -->
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" @click="verifyOtp">Xác nhận</button>
+            <button type="button" class="btn btn-secondary" @click="closeModal">Đóng</button>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</div>
     <!-- End Modal -->
 
     <div class="d-flex justify-content-center align-items-center vh-100">
@@ -119,7 +120,7 @@
                 type="submit"
                 value="Đăng Ký"
                 class="btn btn-primary w-50"
-                :disabled="!isValidated"
+                :disabled="!isValidated || loading"
               />
               <button type="button" @click="resetForm" class="btn btn-secondary ms-3">Xóa</button>
             </div>
@@ -176,6 +177,8 @@ export default {
       //otp
       showOtpModal: false, // Controls modal visibility
       otp: "", // Stores the OTP entered by the user
+      otpError: "", // Stores the OTP error message
+      loading: false, // Controls loading state
     };
   },
   watch: {
@@ -194,27 +197,37 @@ export default {
   },
   methods: {
     async getVerificationCode (){
-    const form = { email: this.email };
-    try {
-      const res = await api.post('/auth/generate', form);
-      this.showAlert('Info', res.data.message);
-      this.showOtpModal = true;
-    } catch (error) {
-      this.showAlert('Error', 'Không thể gửi mã OTP. Vui lòng thử lại.');
-    }
+      this.loading = true;
+      const form = { email: this.email };
+      try {
+        const res = await api.post('/auth/generate', form);
+        this.showAlert('Info', res.data.message);
+        this.openModal();
+      } catch (error) {
+        this.showAlert('Error', error.response.data.message);
+      } finally {
+        this.loading = false;
+      }
     },
     async verifyOtp() {
-      const form = { email: this.email, code: this.otp };
-    try {
-      const res = await api.post('/auth/verify', form);
-      this.showAlert('Success', 'Xác thực mã OTP thành công!');
-      this.showOtpModal = false;  
-      await this.completeRegistration(); 
-    } catch (error) {
-      this.showAlert('Error', 'Mã OTP không chính xác. Vui lòng thử lại.');
-    }
+      this.loading = true;
+      const data = { email: this.email, code: this.otp };
+      try {
+        const res = await api.post('/auth/verify', data);
+        this.showAlert('Success', res.data.message); // Success message after OTP verification
+        this.closeModal();
+        await this.completeRegistration(); 
+      } catch (error) {
+        this.otpError = error.response.data.message || "Lỗi khi xác thực OTP";
+      } finally {
+        this.loading = false;
+      }
     },
-    async completeRegistration() {
+
+    async registerUser() {
+    await this.getVerificationCode();  // Gọi phương thức nhận OTP trước tiên
+  },
+  async completeRegistration() {
     try {
       const formData = new FormData();
       formData.append('account', new Blob([JSON.stringify({
@@ -253,104 +266,61 @@ export default {
       this.showAlert('Error', error.response.data.message);
     }
   },
-    // async registerUser() {
-     
-    //   await this.getVerificationCode()
-    //   await this.verifyOtp()
-
-    //   try {
-    //     const formData = new FormData();
-    //     formData.append('account', new Blob([JSON.stringify({
-    //       fullname: this.fullname,
-    //       email: this.email,
-    //       birth: this.birth,
-    //       password: this.password,
-    //       password_confirm: this.password_confirm,
-    //       address: this.address,
-    //       gender: this.gender
-    //     })], { type: 'application/json' }));
-
-
-
-
-      //   const imageInput = document.getElementById('imageUpload');
-      // if (imageInput.files[0]) {
-      //     formData.append('image', imageInput.files[0]);
-      // }else{
-      //   const defaultAvatarUrl = "src/assets/data/img/deafaultAvatar.png";
-      //   const response = await fetch(defaultAvatarUrl);
-      //   const blob = await response.blob();
-      //   formData.append('image', blob, 'defaultAvatar.png');
-      // }
-      
-    //     const res = await api.post('/auth/register', formData, {
-    //       headers: {
-    //         'Content-Type': 'multipart/form-data'
-    //       }
-    //     });
-       
-
-
-    //     const response = res.data
-    //     console.log(response)
-    //     if (response.status === 'CREATED') {
-    //       this.showAlert('Success', response.message + " . Đang chuyển sang trang đăng nhập");
-    //       setTimeout(() => {
-    //         this.$router.push('/login');
-    //       }, 2000);
-    //     } else {
-    //       this.showAlert('Info',response.message)
-    //     }
-    //   } catch (error) {
-    //     this.showAlert('Error',error.response.data.message)
-    //   }
-    // },
-
-  async registerUser() {
-    await this.getVerificationCode();  // Gọi phương thức nhận OTP trước tiên
-  },
-    validateEmail(value) { this.validated.email = /.+@.+\.(com|vn)$/.test(value); },
-    validatePassword(value) { this.validated.password = /^(?=.*[a-z])(?=.*\d).{8,}$/.test(value); },
-    validatePasswordConfirm(value) { this.validated.passwordConfirm = this.password === value; },
-    validateFullname(value) { this.validated.fullname = value.length >= 6; },
-    validateBirth(value) { this.validated.birth = value !== ''; },
-    validateAddress(value) { this.validated.address = value.length >= 6; },
-    validateGender(value) { this.validated.gender = value !== ''; },
-    showAlert(type, message) { this.alert = { show: true, type: type, message: message }; },
-    hideAlert() { this.alert.show = false; },
     resetForm() {
       this.$refs.registerForm.reset();
-      this.fullname = "";
-      this.email = "";
-      this.password = "";
-      this.address = "";
-      this.gender = "";
-      this.password_confirm = "";
-      this.birth = "";
-      this.validated = {
-        fullname: false,
-        email: false,
-        password: false,
-        address: false,
-        birth: false,
-        gender: false,
-        passwordConfirm: false,
-      };
-      this.imagePreview = "src/assets/data/img/deafaultAvatar.png"; // Đặt lại ảnh mặc định khi reset form
     },
-    previewImage(event) {
-      const file = event.target.files[0];
-      if (file) {
-        this.imagePreview = URL.createObjectURL(file);
-      }
+    validateFullname(value) {
+      this.validated.fullname = value.length >= 6;
+    },
+    validateEmail(value) {
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      this.validated.email = emailPattern.test(value);
+    },
+    validatePassword(value) {
+      const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+      this.validated.password = passwordPattern.test(value);
+    },
+    validatePasswordConfirm(value) {
+      this.validated.passwordConfirm = value === this.password;
+    },
+    validateBirth(value) {
+      this.validated.birth = !!value;
+    },
+    validateAddress(value) {
+      this.validated.address = value.length >= 6;
+    },
+    validateGender(value) {
+      this.validated.gender = value !== '';
+    },
+    showAlert(type, message) {
+      this.alert.type = type;
+      this.alert.message = message;
+      this.alert.show = true;
+    },
+    hideAlert() {
+      this.alert.show = false;
+    },
+    openModal() {
+      this.showOtpModal = true;
     },
     closeModal() {
       this.showOtpModal = false;
+      this.otp = ""; // Reset OTP input
+      this.otpError = ""; // Clear any previous OTP errors
     },
-  },
-};
+    previewImage(event) {
+      const input = event.target;
+      if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = e => {
+          this.imagePreview = e.target.result;
+        };
+        reader.readAsDataURL(input.files[0]);
+      }
+    }
+  }
+}
 </script>
-
 <style>
 .form-img {
   justify-content: center;
