@@ -152,30 +152,34 @@
  <script>
  import { useAuthStore } from "../stores/pina";
  import { useRouter } from 'vue-router';
+ import { computed } from 'vue';
  
  export default {
-  name: "Header",
-  setup() {
-    const authStore = useAuthStore();
-    const router = useRouter();
-    const isAuthenticated = authStore.isAuthenticated;
-    const isAdmin = authStore.isAdmin;
-
-    const logout = async () => {
-      try {
-        await authStore.logout();
-        router.push('/'); // Chuyển hướng sau khi logout
-      } catch (error) {
-        console.error('Logout failed:', error);
-      }
-    };
-
-    return {
-      isAuthenticated,
-      isAdmin,
-      logout,
-    };
-  },
-};
+   name: "Header",
+   setup() {
+     const authStore = useAuthStore();
+     const router = useRouter();
+ 
+     const isAuthenticated = computed(() => authStore.isAuthenticated);
+     const isAdmin = computed(() => authStore.isAdmin);
+ 
+     const logout = async () => {
+       try {
+         await authStore.logout();
+         router.push('/login').then(() => {
+          window.location.reload(); // Reload sau khi chuyển đến trang login
+        });
+       } catch (error) {
+         console.error('Logout failed:', error);
+       }
+     };
+ 
+     return {
+       isAuthenticated,
+       isAdmin,
+       logout,
+     };
+   },
+ };
  </script>
  

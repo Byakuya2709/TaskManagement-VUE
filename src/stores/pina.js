@@ -24,7 +24,7 @@ export const useAuthStore = defineStore('auth', {
          const decodedToken = jwtDecode(this.token);
          console.log(decodedToken)
          this.role = decodedToken.role; 
-          const email=decodedToken.sub;
+        const email=decodedToken.sub;
 
 
          this.user = {
@@ -35,6 +35,11 @@ export const useAuthStore = defineStore('auth', {
         
         localStorage.setItem('token', this.token);
         setAuthorization(this.token);
+        
+        console.log('Token:', this.token);
+        console.log('Role:', this.role);
+        console.log('isAuthenticated:', !!this.token);
+
 
         this.error = null;
 
@@ -48,7 +53,7 @@ export const useAuthStore = defineStore('auth', {
     },
     async logout() {
       try {
-        await api.post('/logout'); // Gọi logout API với phương thức POST
+        await api.post('/logout');
         this.token = null;
         this.user = null;
         this.role = null;

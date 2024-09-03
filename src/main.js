@@ -45,5 +45,11 @@ if (token) {
 
 app.use(createPinia());
 app.use(router);
+
+// Define the routes that require reload
+// const reloadRoutes = ['/login', '/logout', '/admin'];
+
+
+
 app.component("font-awesome-icon", FontAwesomeIcon);
 app.mount('#app');
