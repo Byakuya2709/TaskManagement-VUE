@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
-import { api } from '../api/Api'; 
+import { api } from '../api/Api';
 import { removeAuthorization, setAuthorization } from "../api/Api";
-import {jwtDecode} from 'jwt-decode';  // Sử dụng thư viện jwt-decode
+import { jwtDecode } from 'jwt-decode';  // Sử dụng thư viện jwt-decode
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     user: null,
@@ -11,31 +11,31 @@ export const useAuthStore = defineStore('auth', {
   }),
   actions: {
     async login(user) {
-      
+
       try {
-   
-         await this.logout();
+
+        await this.logout();
         const response = await api.post('/auth/login', user);
         const res = response.data;
         this.token = res.data.token;
 
-       
-    
-         const decodedToken = jwtDecode(this.token);
-         console.log(decodedToken)
-         this.role = decodedToken.role; 
-        const email=decodedToken.sub;
 
 
-         this.user = {
+        const decodedToken = jwtDecode(this.token);
+        console.log(decodedToken)
+        this.role = decodedToken.role;
+        const email = decodedToken.sub;
+
+
+        this.user = {
           id: res.data.userId,
           name: res.data.userName,
-          email:email
+          email: email
         };
-        
+
         localStorage.setItem('token', this.token);
         setAuthorization(this.token);
-        
+
         console.log('Token:', this.token);
         console.log('Role:', this.role);
         console.log('isAuthenticated:', !!this.token);
@@ -69,4 +69,7 @@ export const useAuthStore = defineStore('auth', {
     isAuthenticated: (state) => !!state.token,
     isAdmin: (state) => state.role && state.role.replace('ROLE_', '') === 'ADMIN',
   },
+  setter: {
+
+  }
 });

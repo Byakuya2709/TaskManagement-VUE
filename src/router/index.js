@@ -17,7 +17,7 @@ const router = createRouter({
       // which is lazy-loaded when the route is visited.
       component: () => import('../views/AboutView.vue')
     },
-    
+
     {
       path: '/product/new',
       name: 'productForm',
@@ -32,6 +32,25 @@ const router = createRouter({
       path: '/login',
       name: 'Login',
       component: () => import('../views/LoginView.vue')
+    }
+    , {
+      path: '/user',
+      name: 'User',
+      component: () => import('../views/UserView.vue'),
+      children: [
+        {
+          path: 'newtask',
+          name: 'NewTask',
+          component: () => import('../views/NewTask.vue')
+        },
+        {
+          path: 'tasks',
+          name: 'Tasks',
+          component: () => import('../views/Tasks.vue')
+        }
+
+
+      ]
     }
 
 

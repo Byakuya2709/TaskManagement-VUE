@@ -102,6 +102,10 @@ export default {
   methods: {
     //   ...mapActions(["login"]),
     async loginUser() {
+      if (!this.isValidated) {
+        this.showAlert("Error", "Please fill out all required fields.");
+        return;
+      }
       try {
         const user = {
           email: this.email,
@@ -122,7 +126,10 @@ export default {
           this.showAlert("Info", res.data.message);
         }
       } catch (error) {
-        this.showAlert("Error", error.message || 'An unexpected error occurred');
+        this.showAlert(
+          "Error",
+          error.message || "An unexpected error occurred"
+        );
       }
     },
     validateEmail(value) {
