@@ -51,6 +51,21 @@ const router = createRouter({
 
 
       ]
+    },
+    {
+      path: '/admin',
+      name: 'Admin',
+      component: () => import('../views/AdminView.vue'),
+      children: [
+
+        {
+          path: 'task/all',
+          name: 'Tasks',
+          component: () => import('../views/Tasks.vue')
+        }
+
+
+      ]
     }
 
 
