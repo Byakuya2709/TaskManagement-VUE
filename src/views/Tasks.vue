@@ -61,8 +61,7 @@
   
       // Handle edit task
       handleEditTask(task) {
-        console.log("Editing task: ", task);
-        // Your edit logic here
+        this.$router.push({ name: 'EditTask', params: { id:task.id } });
       },
   
       // Handle delete task
