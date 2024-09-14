@@ -13,7 +13,7 @@ import { fab } from '@fortawesome/free-brands-svg-icons';
 import { far } from '@fortawesome/free-regular-svg-icons';
 library.add(fas, far, fab);
 dom.watch();
-
+import storePlugin from './plugins/store';
 import {jwtDecode} from 'jwt-decode';  // Sử dụng thư viện jwt-decode
 import { removeAuthorization, setAuthorization } from "./api/Api";
 
@@ -25,31 +25,29 @@ if (token) {
   try {
     const decodedToken = jwtDecode(token);
     const currentTime = Math.floor(Date.now() / 1000); // Thời gian hiện tại (tính bằng giây)
-
+    
     // Kiểm tra xem token đã hết hạn chưa
     if (decodedToken.exp < currentTime) {
       console.log("Token has expired. Logging out...");
       localStorage.removeItem('token');
       removeAuthorization();
-      router.push('/login');
+      router.push('/login'); // Redirect to login page
     } else {
-      setAuthorization(token);
+      setAuthorization(token); // Set the authorization header
     }
   } catch (error) {
     console.error("Error decoding token:", error);
     localStorage.removeItem('token');
     removeAuthorization();
-    router.push('/login');
+    router.push('/login'); // Redirect to login page if decoding fails
   }
+} else {
+  // Token không tồn tại, chuyển hướng đến trang đăng nhập
+  router.push('/login');
 }
 
 app.use(createPinia());
 app.use(router);
-
-// Define the routes that require reload
-// const reloadRoutes = ['/login', '/logout', '/admin'];
-
-
-
+app.use(storePlugin);
 app.component("font-awesome-icon", FontAwesomeIcon);
 app.mount('#app');

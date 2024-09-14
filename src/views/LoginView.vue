@@ -114,6 +114,7 @@ export default {
         const authStore = useAuthStore();
 
         const res = await authStore.login(user);
+        console.log(res)
         if (res.data.status === "OK") {
           this.showAlert(
             "Success",

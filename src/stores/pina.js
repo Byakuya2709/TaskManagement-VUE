@@ -1,15 +1,32 @@
 import { defineStore } from 'pinia';
 import { api } from '../api/Api';
 import { removeAuthorization, setAuthorization } from "../api/Api";
-import { jwtDecode } from 'jwt-decode';  // Sử dụng thư viện jwt-decode
+import { jwtDecode } from 'jwt-decode';  
 export const useAuthStore = defineStore('auth', {
   state: () => ({
-    user: null,
+    user: {},
     token: null,
     error: null,
     role: null,
   }),
   actions: {
+    async hydrate() {
+      const token = localStorage.getItem('token');
+      if (token) {
+        this.token = token;
+        setAuthorization(token);
+        const decodedToken = jwtDecode(token);
+        this.$patch({
+          role: decodedToken.role,
+          user: {
+            id: decodedToken.userId,
+            name: decodedToken.userName,
+            email: decodedToken.sub
+          },
+          token: this.token
+        });
+      }
+    },
     async login(user) {
 
       try {
@@ -18,20 +35,20 @@ export const useAuthStore = defineStore('auth', {
         const response = await api.post('/auth/login', user);
         const res = response.data;
         this.token = res.data.token;
-
-
-
         const decodedToken = jwtDecode(this.token);
         console.log(decodedToken)
         this.role = decodedToken.role;
-        const email = decodedToken.sub;
 
 
-        this.user = {
-          id: res.data.userId,
-          name: res.data.userName,
-          email: email
-        };
+        this.$patch({
+          role: decodedToken.role,
+          user: {
+            id: res.data.userId,
+            name: res.data.userName,
+            email: decodedToken.sub
+          },
+          token: this.token
+        });
 
         localStorage.setItem('token', this.token);
         setAuthorization(this.token);
@@ -42,9 +59,10 @@ export const useAuthStore = defineStore('auth', {
 
 
         this.error = null;
-
+        console.log(res)
         return response;
       } catch (err) {
+        console.log(err)
         localStorage.removeItem('token');
         removeAuthorization();
         this.error = err.response?.data?.message || 'An error occurred';
@@ -54,22 +72,26 @@ export const useAuthStore = defineStore('auth', {
     async logout() {
       try {
         await api.post('/logout');
-        this.token = null;
-        this.user = null;
-        this.role = null;
+        // Xóa các thông tin xác thực và người dùng
+        this.$patch({
+          token: null,
+          user: {}, // Keep it as an empty object instead of null
+          role: null,
+        });
+        // Xóa token khỏi localStorage và API header
         localStorage.removeItem('token');
         removeAuthorization();
+  
+        console.log("Logged out successfully");
       } catch (err) {
         console.error("Logout error:", err);
-        // Có thể muốn thêm xử lý lỗi ở đây
+        this.error = "Đăng xuất không thành công. Vui lòng thử lại.";
       }
     }
   },
   getters: {
     isAuthenticated: (state) => !!state.token,
     isAdmin: (state) => state.role && state.role.replace('ROLE_', '') === 'ADMIN',
+    userId: (state) => state.user.id,
   },
-  setter: {
-
-  }
 });

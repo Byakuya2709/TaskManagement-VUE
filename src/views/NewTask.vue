@@ -80,20 +80,19 @@
 <script>
 import { api } from "../api/Api";
 import Alert from "../components/Alert.vue";
-
+import { useAuthStore } from "../stores/pina";
 export default {
   name: "NewTask",
   components: {
     Alert,
   },
+
   data() {
     return {
       title: "",
       description: "",
       date: "",
-      status: "",
-      userId: "",
-
+      status: "", 
       alert: {
         show: false,
         type: "",
@@ -108,13 +107,15 @@ export default {
       },
     };
   },
+  // mounted() {
+  //   this.$authStore.hydrate();
+  // },
   methods: {
     async createTask() {
       if (!this.isValidated) {
         this.showAlert("Error", "Please fill out all required fields.");
         return;
       }
-
       try {
         const formData = {
           title: this.title,
@@ -123,7 +124,8 @@ export default {
           status: this.status,
           userId: this.userId,
         };
-        const res = await api.post("/user/newtask", formData);
+        console.log(formData)
+        const res = await api.post("/user/task/newtask", formData);
         console.log(res);
         this.showAlert("Success", res.data.message);
       } catch (error) {
@@ -133,7 +135,6 @@ export default {
     },
     validateTitle(value) {
       this.validate.title = value.length >= 6;
-      console.log(this.validate.title);
     },
     validateDescription(value) {
       this.validate.description = value.length >= 10;
@@ -176,6 +177,9 @@ export default {
         this.validate.status
       );
     },
+    userId() {
+      return this.$authStore.userId;
+    }
   },
 };
 </script>

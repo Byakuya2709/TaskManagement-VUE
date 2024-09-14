@@ -1,9 +1,15 @@
 <script setup>
-import { RouterLink, RouterView } from 'vue-router'
+import { onMounted } from 'vue';
+import { RouterLink, RouterView } from 'vue-router';
+import Header from './components/Header.vue';
+import Footer from './components/Footer.vue';
+import { useAuthStore } from "./stores/pina";
 
-import Header from './components/Header.vue'
+const authStore = useAuthStore();
 
-import Footer from './components/Footer.vue'
+onMounted(() => {
+  authStore.hydrate();
+});
 </script>
 
 <template>
