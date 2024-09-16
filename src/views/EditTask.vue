@@ -147,9 +147,10 @@ export default {
     this.task = task;
     this.title = task.title;
     this.description = task.description;
-    this.date = task.date;
+    this.date = task.date.split("T")[0];
     this.status = task.status;
     this.userId = task.user.id;
+    console.log(task)
 
     // Xác thực lại các trường sau khi tải dữ liệu
     this.validateTitle(this.title);

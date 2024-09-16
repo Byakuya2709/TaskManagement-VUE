@@ -1,5 +1,5 @@
 <template>
-  <div class="card task-card">
+  <div @click="goToTaskDetail" class="card task-card">
     <div class="card-body">
       <h5 class="card-title task-title">{{ task.title }}</h5>
       <hr>
@@ -22,10 +22,11 @@
       </div>
       <hr>
       <div class="d-flex justify-content-center">
-        <button @click="editTask" class="btn btn-custom-primary mx-2">
+         <!-- Use @click.stop to prevent the click event from the parent div -->
+        <button @click.stop="editTask" class="btn btn-custom-primary mx-2">
           Cập nhật
         </button>
-        <button @click="deleteTask" class="btn btn-custom-danger mx-2">
+        <button @click.stop="deleteTask" class="btn btn-custom-danger mx-2">
           Xóa
         </button>
       </div>
@@ -51,6 +52,9 @@ export default {
     deleteTask() {
       this.$emit("deleteTask", this.task);
     },
+    goToTaskDetail() {
+      this.$router.push({ name: 'TaskDetail', params: { taskId: this.task.id } });
+    }
   },
   computed: {
     statusBadge() {
