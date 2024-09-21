@@ -103,30 +103,7 @@ export default {
   components: {
     Alert,
   },
-  setup() {
-     const authStore = useAuthStore();
-     const router = useRouter();
- 
-     const isAuthenticated = computed(() => authStore.isAuthenticated);
-     const isAdmin = computed(() => authStore.isAdmin);
- 
-     const logout = async () => {
-       try {
-         await authStore.logout();
-         router.push('/login').then(() => {
-          window.location.reload(); // Reload sau khi chuyển đến trang login
-        });
-       } catch (error) {
-         console.error('Logout failed:', error);
-       }
-     };
- 
-     return {
-       isAuthenticated,
-       isAdmin,
-       logout,
-     };
-   },
+  
   data() {
     return {
       users: [],

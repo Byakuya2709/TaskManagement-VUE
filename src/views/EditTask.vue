@@ -149,8 +149,8 @@ export default {
     this.description = task.description;
     this.date = task.date.split("T")[0];
     this.status = task.status;
-    this.userId = task.user.id;
-    console.log(task)
+    this.userId = task.userId;
+
 
     // Xác thực lại các trường sau khi tải dữ liệu
     this.validateTitle(this.title);
@@ -160,7 +160,9 @@ export default {
     this.validateUser(this.userId);
 
   } catch (error) {
-    this.showAlert("Error", error.response.data.message);
+    console.log(error); // Use console.error for better distinction in the console
+    const message = error.response?.data?.message || error;
+    this.showAlert("Error", message);
   }
 },
     async editTask() {
@@ -179,7 +181,11 @@ export default {
         };
         const res = await api.put(`/admin/task/update/${this.task.id}`, formData);
         this.showAlert("Success", res.data.message);
+        setTimeout(() => {
+            this.$router.push("/admin/task/all");
+          }, 2000);
       } catch (error) {
+      
         this.showAlert("Error", error.response.data.message);
       }
     },
