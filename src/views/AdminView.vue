@@ -42,6 +42,27 @@
                 </svg>
                 <span class="ms-2">Quản Lý Công Việc</span>
               </router-link>
+           
+            </li>
+            <li class="nav-item mb-2">
+              <router-link
+                to="/admin/management/user"
+                class="d-flex align-items-center p-2 text-dark rounded nav-link bg-light hover-bg-primary"
+              >
+                <svg
+                  class="bi bi-clipboard text-secondary"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="currentColor"
+                  viewBox="0 0 16 16"
+                  width="20"
+                  height="20"
+                >
+                  <path d="M2 3.5V2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v1.5h1a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1v-10a1 1 0 0 1 1-1h1zm11-1V2a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v.5H2v10h12v-10h-1z" />
+                  <path d="M9 8H7v4h2V8zm1-3H6v2h4V5z" />
+                </svg>
+                <span class="ms-2">Quản Lý Nhân Viên</span>
+              </router-link>
             </li>
             <li class="nav-item mb-2">
               <router-link
@@ -60,7 +81,7 @@
                   <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 .5-.5z" />
                   <path d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zM1 8a7 7 0 1 1 14 0A7 7 0 0 1 1 8z" />
                 </svg>
-                <span class="ms-2">Tạo Task</span>
+                <span class="ms-2">Phân Công Công Việc</span>
               </router-link>
             </li>
           </ul>
