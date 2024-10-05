@@ -78,6 +78,12 @@ const router = createRouter({
           name: 'SetNewTask',
           component: () => import('../views/SetNewTask.vue')
         },
+        {
+          path: 'management/user',
+          name: 'ManagementUser',
+          component: () => import('../views/ManagementUser.vue')
+        },
+
 
       ]
     }
