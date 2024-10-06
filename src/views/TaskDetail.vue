@@ -7,6 +7,10 @@
   />
   <div class="card task-card">
     <div class="card-body">
+      <div class="button-group">
+        <button class="btn btn-warning mx-2" @click="updateTask">Cập nhật</button>
+        <button class="btn btn-danger" @click="deleteTask">Xóa</button>
+      </div>
       <h5 class="card-title task-title">{{ task.title }}</h5>
       <hr />
       <p class="card-text task-description">{{ task.description }}</p>
@@ -22,7 +26,7 @@
         </div>
         <div class="row mt-3">
           <div class="col-12 text-center">
-            <span class="badge">{{ task.status }}</span>
+            <span class="badge" :class="taskBadges(task.status)">{{ task.status }}</span>
           </div>
         </div>
       </div>
@@ -47,8 +51,7 @@
         <p v-if="comments.length === 0">Chưa có bình luận nào.</p>
         <div v-else v-for="comment in comments" :key="comment.id" class="comment">
           <p>
-            <strong> {{ comment.userName }} : </strong>
-            {{ comment.content }}
+            <strong>{{ comment.userName }}:</strong> {{ comment.content }}
           </p>
           <p class="text-muted">{{ formatDateTime(comment.date) }}</p>
           <hr />
@@ -99,7 +102,7 @@ export default {
           content: comment.content,
           date: comment.createdDate,
           userId: comment.userId,
-          userName :comment.userName,
+          userName: comment.userName,
           taskTitle: comment.taskTitle,
           taskId: comment.taskId,
         }));
@@ -116,23 +119,39 @@ export default {
           `/comment/task/${this.$route.params.taskId}`,
           {
             content: this.newComment,
-            userId : this.userId 
+            userId: this.userId 
           }
         );
         const newComment = res.data.data;
-        console.log(newComment.createdDate);
         this.comments.push({
-        id: newComment.id,
-        content: newComment.content,
-        date: newComment.createdDate,
-        userName:newComment.userName,
-        userId: newComment.userId,
-        taskId: newComment.taskId,
-      });
+          id: newComment.id,
+          content: newComment.content,
+          date: newComment.createdDate,
+          userName: newComment.userName,
+          userId: newComment.userId,
+          taskId: newComment.taskId,
+        });
         this.newComment = ""; 
       } catch (error) {
         const message = error.response?.data?.message || error;
-        this.showAlert("Error",message);
+        this.showAlert("Error", message);
+      }
+    },
+    async updateTask() {
+      this.$router.push({ name: "EditTask", params: { id: this.task.id } });
+    },
+    async deleteTask() {
+      const confirmed = confirm("Are you sure you want to delete this task?");
+      if (!confirmed) {
+        return;
+      }
+      try {
+        await api.delete(`/admin/task/${this.task.id}`);
+        this.showAlert("Success", "Task deleted successfully!");
+        this.$router.replace({ name: "Tasks" }); // Redirect after deletion
+      } catch (error) {
+        console.log(error);
+        this.showAlert("Error", error.response.data.message);
       }
     },
     showAlert(type, message) {
@@ -151,26 +170,64 @@ export default {
       return new Date(date).toLocaleDateString();
     },
     formatDateTime(date) {
-    return new Date(date).toLocaleString('vi-VN', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-    });
+      return new Date(date).toLocaleString('vi-VN', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+      });
+    },
+    taskBadges(status) {
+      return {
+        "badge-success": status === "COMPLETED",
+        "badge-warning": status === "PENDING",
+        "badge-danger": status === "CANCELED",
+        "badge-info": status === "IN_PROGRESS",
+      };
+    },
   },
-  },
-  computed:{
+  computed: {
     userId() {
       return this.$authStore.userId;
-    }
+    },
   }
 };
 </script>
+
 <style scoped>
-*{
-    font-size: 1.2rem;
+* {
+  font-size: 1.2rem;
+}
+
+.task-card {
+  margin: 20px 0;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  overflow: hidden; /* Ensure corners are rounded */
+}
+
+.task-title {
+  font-weight: bold;
+}
+
+.button-group {
+  display: flex;
+  justify-content: flex-end; /* Align buttons to the right */
+  margin-bottom: 15px;
+}
+
+.comment-form {
+  margin-top: 20px;
+}
+
+.comments-section {
+  margin-top: 20px;
+}
+
+.badge {
+  padding: 0.5em 1em; /* Add padding for badge */
+  font-size: 1.1rem; /* Slightly larger font for badge */
 }
 </style>
-

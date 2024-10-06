@@ -1,5 +1,7 @@
 import axios from "axios";
+import { useToast } from "vue-toastification";
 
+const toast = useToast();
 const commonConfig = {
     headers: {
         "Content-Type": "application/json",
@@ -23,5 +25,32 @@ api.interceptors.request.use((config) => {
     console.log('Request Headers:', config.headers);
     return config;
 }, (error) => {
+    return Promise.reject(error);
+});
+
+
+api.interceptors.response.use((response) => {
+    return response;
+}, (error) => {
+    if (error.response) {
+        const status = error.response.status;
+        const message = error.response.data.message || 'An error occurred';
+
+        // Hiển thị thông báo lỗi với Toast
+        if (status === 401) {
+            toast.error(`Unauthorized: ${message}`);
+        } else if (status === 403) {
+            toast.error(`Access Denied: ${message}`);
+        } else {
+            toast.error(`Error ${status}: ${message}`);
+        }
+    } else if (error.request) {
+        // Không có phản hồi từ server
+        toast.error('No response from server. Please check your network.');
+    } else {
+        // Các lỗi khác
+        toast.error(`Error: ${error.message}`);
+    }
+
     return Promise.reject(error);
 });

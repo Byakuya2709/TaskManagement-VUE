@@ -2,6 +2,8 @@ import { defineStore } from 'pinia';
 import { api } from '../api/Api';
 import { removeAuthorization, setAuthorization } from "../api/Api";
 import { jwtDecode } from 'jwt-decode';  
+import { useToast } from "vue-toastification";
+const toast = useToast();
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     user: {},
@@ -71,7 +73,14 @@ export const useAuthStore = defineStore('auth', {
     },
     async logout() {
       try {
-        await api.post('/logout');
+       const response = await api.post('/logout');
+        console.log(response)
+        if (response.status === 200) {
+          toast.success(response.data.message);
+        }
+          // Hiển thị thông báo thành công
+        
+
         // Xóa các thông tin xác thực và người dùng
         this.$patch({
           token: null,
@@ -84,7 +93,7 @@ export const useAuthStore = defineStore('auth', {
   
         console.log("Logged out successfully");
       } catch (err) {
-        console.error("Logout error:", err);
+        toast.error(err.response.data.message);
         this.error = "Đăng xuất không thành công. Vui lòng thử lại.";
       }
     }

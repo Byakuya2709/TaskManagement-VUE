@@ -61,7 +61,8 @@ export default {
       return {
         'badge-success': this.task.status === 'COMPLETED',
         'badge-warning': this.task.status === 'PENDING',
-        'badge-danger': this.task.status === 'OVERDUE',
+        'badge-danger': this.task.status === 'CANCELED',
+        'badge-info': this.task.status === 'IN_PROGRESS',
       };
     },
   },
@@ -115,6 +116,10 @@ export default {
 
 .badge-danger {
   background-color: #dc3545;
+  color: white;
+}
+.badge-info {
+  background-color: #418adf;
   color: white;
 }
 

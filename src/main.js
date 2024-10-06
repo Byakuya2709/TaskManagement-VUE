@@ -17,6 +17,11 @@ import storePlugin from './plugins/store';
 import {jwtDecode} from 'jwt-decode';  // Sử dụng thư viện jwt-decode
 import { removeAuthorization, setAuthorization } from "./api/Api";
 
+import Toast from "vue-toastification";
+import "vue-toastification/dist/index.css";
+
+import ToastPlugin from '@/plugins/toast';
+
 // Kiểm tra token và xử lý khi ứng dụng khởi tạo
 const app = createApp(App);
 const token = localStorage.getItem('token');
@@ -45,7 +50,12 @@ if (token) {
   // Token không tồn tại, chuyển hướng đến trang đăng nhập
   router.push('/login');
 }
-
+app.use(Toast, {
+  position: "top-right",
+  timeout: 5000,
+  closeOnClick: true,
+});
+app.use(ToastPlugin);
 app.use(createPinia());
 app.use(router);
 app.use(storePlugin);

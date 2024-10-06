@@ -166,11 +166,14 @@
      const logout = async () => {
        try {
          await authStore.logout();
-         router.push('/login').then(() => {
+         setTimeout(() => {
+          router.push('/login').then(() => {
           window.location.reload(); // Reload sau khi chuyển đến trang login
         });
+}, 4000)
+        
        } catch (error) {
-         console.error('Logout failed:', error);
+        this.$toast.error(error)
        }
      };
  

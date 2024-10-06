@@ -62,7 +62,7 @@
           <option value="" disabled>Select status</option>
           <option value="PENDING">Pending</option>
           <option value="IN_PROGRESS">In Progress</option>
-          <option value="COMPLETED">Completed</option>
+          <!-- <option value="COMPLETED">Completed</option> -->
           <option value="CANCELED">Canceled</option>
         </select>
         <div v-if="!validate.status && !status" class="invalid-feedback">
@@ -130,7 +130,7 @@ export default {
         this.showAlert("Success", res.data.message);
       } catch (error) {
         console.log(error);
-        this.showAlert("Error", error.response.data.message);
+        this.$toast.error(error.response.data.message)
       }
     },
     validateTitle(value) {
