@@ -35,6 +35,7 @@ if (token) {
     if (decodedToken.exp < currentTime) {
       console.log("Token has expired. Logging out...");
       localStorage.removeItem('token');
+      localStorage.removeItem('avatar');
       removeAuthorization();
       router.push('/login'); // Redirect to login page
     } else {
@@ -44,15 +45,14 @@ if (token) {
     console.error("Error decoding token:", error);
     localStorage.removeItem('token');
     removeAuthorization();
-    router.push('/login'); // Redirect to login page if decoding fails
   }
 } else {
-  // Token không tồn tại, chuyển hướng đến trang đăng nhập
   router.push('/login');
 }
+
 app.use(Toast, {
   position: "top-right",
-  timeout: 5000,
+  timeout: 4000,
   closeOnClick: true,
 });
 app.use(ToastPlugin);

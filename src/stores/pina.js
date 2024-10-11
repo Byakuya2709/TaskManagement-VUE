@@ -3,13 +3,20 @@ import { api } from '../api/Api';
 import { removeAuthorization, setAuthorization } from "../api/Api";
 import { jwtDecode } from 'jwt-decode';  
 import { useToast } from "vue-toastification";
+
 const toast = useToast();
+
 export const useAuthStore = defineStore('auth', {
   state: () => ({
-    user: {},
+    user: {
+      id: null,
+      name: '',
+      email: ''
+    },
     token: null,
     error: null,
     role: null,
+    avatar: null, // avatar khởi tạo là null
   }),
   actions: {
     async hydrate() {
@@ -25,47 +32,46 @@ export const useAuthStore = defineStore('auth', {
             name: decodedToken.userName,
             email: decodedToken.sub
           },
-          token: this.token
+          avatar:localStorage.getItem('avatar')
         });
       }
     },
     async login(user) {
-
       try {
-
-        await this.logout();
+        await this.logout(); // Đăng xuất trước khi đăng nhập
         const response = await api.post('/auth/login', user);
         const res = response.data;
+    
+        // Ghi log dữ liệu trả về từ API
+        console.log('Dữ liệu trả về từ API:', res);
+    
         this.token = res.data.token;
         const decodedToken = jwtDecode(this.token);
-        console.log(decodedToken)
         this.role = decodedToken.role;
-
-
+    
+        const avatar = res.data.avatar ? `data:image/png;base64,${res.data.avatar}` : null;
+        localStorage.setItem('avatar', avatar);
+    
+        // Cập nhật state
         this.$patch({
-          role: decodedToken.role,
           user: {
             id: res.data.userId,
             name: res.data.userName,
             email: decodedToken.sub
           },
-          token: this.token
+          role: decodedToken.role,
+          token: this.token,
         });
-
+    
+    
         localStorage.setItem('token', this.token);
         setAuthorization(this.token);
-
-        console.log('Token:', this.token);
-        console.log('Role:', this.role);
-        console.log('isAuthenticated:', !!this.token);
-
-
-        this.error = null;
-        console.log(res)
+    
+        this.error = null; // Reset error
         return response;
       } catch (err) {
-        console.log(err)
-        localStorage.removeItem('token');
+        console.log(err);
+        localStorage.removeItem('token'); // Xóa token khi lỗi
         removeAuthorization();
         this.error = err.response?.data?.message || 'An error occurred';
         throw new Error(this.error);
@@ -73,25 +79,21 @@ export const useAuthStore = defineStore('auth', {
     },
     async logout() {
       try {
-       const response = await api.post('/logout');
-        console.log(response)
+        const response = await api.post('/logout');
         if (response.status === 200) {
           toast.success(response.data.message);
         }
-          // Hiển thị thông báo thành công
-        
 
-        // Xóa các thông tin xác thực và người dùng
+        // Cập nhật lại state khi đăng xuất
         this.$patch({
           token: null,
-          user: {}, // Keep it as an empty object instead of null
+          user: { id: null, name: '', email: '' }, 
           role: null,
+          avatar: null, // Reset avatar khi đăng xuất
         });
-        // Xóa token khỏi localStorage và API header
+
         localStorage.removeItem('token');
         removeAuthorization();
-  
-        console.log("Logged out successfully");
       } catch (err) {
         toast.error(err.response.data.message);
         this.error = "Đăng xuất không thành công. Vui lòng thử lại.";
@@ -102,5 +104,7 @@ export const useAuthStore = defineStore('auth', {
     isAuthenticated: (state) => !!state.token,
     isAdmin: (state) => state.role && state.role.replace('ROLE_', '') === 'ADMIN',
     userId: (state) => state.user.id,
+    userName: (state) => state.user.name,
+    email: (state) => state.user.email,
   },
 });
