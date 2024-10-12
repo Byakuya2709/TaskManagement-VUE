@@ -1,11 +1,6 @@
 <template>
   <div class="register bg-light">
-    <Alert
-      :show="alert.show"
-      :type="alert.type"
-      :message="alert.message"
-      @close-alert="hideAlert"
-    />
+
 
     <!-- Modal to enter OTP -->
     <div
@@ -202,12 +197,10 @@
 </template>
 
 <script>
-import Alert from "../components/Alert.vue";
 import { api } from "../api/Api"; // Sử dụng named import
 
 export default {
   name: "Register",
-  components: { Alert },
   data() {
     return {
       //formdata
@@ -228,12 +221,7 @@ export default {
         address: false,
         gender: false,
       },
-      //alert
-      alert: {
-        show: false,
-        type: "",
-        message: "",
-      },
+
       //otp
       showOtpModal: false, // Controls modal visibility
       otp: "", // Stores the OTP entered by the user
@@ -280,7 +268,7 @@ export default {
   methods: {
     async getVerificationCode() {
       if (!this.isValidated) {
-        this.showAlert("Error", "Please fill out all required fields.");
+        this.$toast.error("Please fill out all required fields.");
         return;
       }
 
@@ -288,10 +276,10 @@ export default {
       const form = { email: this.email };
       try {
         const res = await api.post("/auth/generate", form);
-        this.showAlert("Info", res.data.message);
+        this.$toast.info(res.data.message);
         this.openModal();
       } catch (error) {
-        this.showAlert("Error", error.response.data.message);
+        this.$toast.error(error.response.data.message);
       } finally {
         this.loading = false;
       }
@@ -301,7 +289,7 @@ export default {
       const data = { email: this.email, code: this.otp };
       try {
         const res = await api.post("/auth/verify", data);
-        this.showAlert("Success", res.data.message); // Success message after OTP verification
+        this.$toast.success(res.data.message); // Success message after OTP verification
         this.closeModal();
         await this.completeRegistration();
       } catch (error) {
@@ -350,18 +338,17 @@ export default {
         });
 
         if (res.data.status === "CREATED") {
-          this.showAlert(
-            "Success",
+          this.$toast.success(
             res.data.message + " . Đang chuyển sang trang đăng nhập"
           );
           setTimeout(() => {
             this.$router.push("/login");
           }, 2000);
         } else {
-          this.showAlert("Info", res.data.message);
+          this.$toast.info(res.data.message);
         }
       } catch (error) {
-        this.showAlert("Error", error.response.data.message);
+        this.$toast.error(error.response.data.message);
       }
     },
     resetForm() {
@@ -389,14 +376,6 @@ export default {
     },
     validateGender(value) {
       this.validated.gender = value !== "";
-    },
-    showAlert(type, message) {
-      this.alert.type = type;
-      this.alert.message = message;
-      this.alert.show = true;
-    },
-    hideAlert() {
-      this.alert.show = false;
     },
     openModal() {
       this.showOtpModal = true;

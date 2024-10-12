@@ -1,5 +1,5 @@
 <template>
-    <div id="user" class="container mx-auto d-flex">
+    <!-- <div id="user" class="container mx-auto d-flex">
       <div id="logo-sidebar" class="col-2 vh-100 bg-white border-end border-secondary bg-light">
         <div class="h-100 px-3 pt-4 pb-2 overflow-auto">
           <ul class="nav flex-column">
@@ -70,7 +70,7 @@
       <div class="container col-10 my-4">
         <RouterView />
       </div>
-    </div>
+    </div> -->
   </template>
   
   

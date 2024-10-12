@@ -12,12 +12,8 @@ const router = createRouter({
     {
       path: '/about',
       name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
       component: () => import('../views/AboutView.vue')
     },
-
     {
       path: '/product/new',
       name: 'productForm',
@@ -32,24 +28,22 @@ const router = createRouter({
       path: '/login',
       name: 'Login',
       component: () => import('../views/LoginView.vue')
-    }
-    , {
+    },
+    {
       path: '/user',
       name: 'User',
       component: () => import('../views/UserView.vue'),
       children: [
         {
           path: 'newtask',
-          name: 'NewTask',
+          name: 'UserNewTask', // Unique name for the route
           component: () => import('../views/NewTask.vue')
         },
         {
           path: 'tasks',
-          name: 'Tasks',
+          name: 'UserTasks',  // Unique name for the route
           component: () => import('../views/Tasks.vue')
         }
-
-
       ]
     },
     {
@@ -57,10 +51,9 @@ const router = createRouter({
       name: 'Admin',
       component: () => import('../views/AdminView.vue'),
       children: [
-
         {
           path: 'task/all',
-          name: 'Tasks',
+          name: 'AdminTasks',  // Unique name for the route
           component: () => import('../views/Tasks.vue')
         },
         {
@@ -70,7 +63,7 @@ const router = createRouter({
         },
         {
           path: 'task/edit/:id',
-          name: 'EditTask', // Changed the name here
+          name: 'EditTask',
           component: () => import('../views/EditTask.vue')
         },
         {
@@ -81,19 +74,15 @@ const router = createRouter({
         {
           path: 'management/user',
           name: 'ManagementUser',
-          component: () => import('../views/ManagementUser.vue'),
+          component: () => import('../views/ManagementUser.vue')
         },
         {
           path: 'management/user/:userId',
           name: 'UserProfile',
-          component: () => import('../views/UserProfile.vue'),      
-    
+          component: () => import('../views/UserProfile.vue')
         }
-
       ]
     }
-
-
   ]
 })
 

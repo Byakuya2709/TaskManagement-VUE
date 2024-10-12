@@ -1,11 +1,5 @@
 <template>
   <div>
-    <Alert
-      :show="alert.show"
-      :type="alert.type"
-      :message="alert.message"
-      @close-alert="hideAlert"
-    />
     <form @submit.prevent="editTask">
       <div class="mb-3">
         <label for="title" class="form-label">Title</label>
@@ -94,13 +88,9 @@
 
 <script>
 import { api } from "../api/Api";
-import Alert from "../components/Alert.vue";
 
 export default {
   name: "EditTask",
-  components: {
-    Alert,
-  },
   data() {
     return {
       users: [],
@@ -110,12 +100,6 @@ export default {
       date: "",
       status: "",
       userId: "",
-
-      alert: {
-        show: false,
-        type: "",
-        message: "",
-      },
 
       validate: {
         title: false,
@@ -136,38 +120,36 @@ export default {
         const res = await api.get("/admin/user/all");
         this.users = res.data.data;
       } catch (error) {
-        this.showAlert("Error", error.response.data.message);
+        this.$toast.error(error.response.data.message); // Use toast for error messages
       }
     },
     async fetchTask() {
-  try {
-    const res = await api.get(`/admin/task/${this.$route.params.id}`);
-    const task = res.data.data;
+      try {
+        const res = await api.get(`/admin/task/${this.$route.params.id}`);
+        const task = res.data.data;
 
-    this.task = task;
-    this.title = task.title;
-    this.description = task.description;
-    this.date = task.date.split("T")[0];
-    this.status = task.status;
-    this.userId = task.userId;
+        this.task = task;
+        this.title = task.title;
+        this.description = task.description;
+        this.date = task.date.split("T")[0];
+        this.status = task.status;
+        this.userId = task.userId;
 
-
-    // Xác thực lại các trường sau khi tải dữ liệu
-    this.validateTitle(this.title);
-    this.validateDescription(this.description);
-    this.validateDate(this.date);
-    this.validateStatus(this.status);
-    this.validateUser(this.userId);
-
-  } catch (error) {
-    console.log(error); // Use console.error for better distinction in the console
-    const message = error.response?.data?.message || error;
-    this.showAlert("Error", message);
-  }
-},
+        // Validate fields after loading data
+        this.validateTitle(this.title);
+        this.validateDescription(this.description);
+        this.validateDate(this.date);
+        this.validateStatus(this.status);
+        this.validateUser(this.userId);
+      } catch (error) {
+        console.log(error);
+        const message = error.response?.data?.message || error;
+        this.$toast.error(message); // Use toast for error messages
+      }
+    },
     async editTask() {
       if (!this.isValidated) {
-        this.showAlert("Error", "Please fill out all required fields.");
+        this.$toast.error("Please fill out all required fields."); // Use toast for validation errors
         return;
       }
 
@@ -180,13 +162,12 @@ export default {
           userId: this.userId,
         };
         const res = await api.put(`/admin/task/update/${this.task.id}`, formData);
-        this.showAlert("Success", res.data.message);
+        this.$toast.success(res.data.message); // Use toast for success messages
         setTimeout(() => {
-            this.$router.push("/admin/task/all");
-          }, 2000);
+          this.$router.push("/admin/task/all");
+        }, 2000);
       } catch (error) {
-      
-        this.showAlert("Error", error.response.data.message);
+        this.$toast.error(error.response.data.message); // Use toast for error messages
       }
     },
     validateTitle(value) {
@@ -203,14 +184,6 @@ export default {
     },
     validateUser(value) {
       this.validate.user = !!value;
-    },
-    showAlert(type, message) {
-      this.alert.type = type;
-      this.alert.message = message;
-      this.alert.show = true;
-    },
-    hideAlert() {
-      this.alert.show = false;
     },
   },
   watch: {

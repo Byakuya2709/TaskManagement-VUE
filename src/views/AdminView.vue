@@ -56,11 +56,11 @@ export default {
     },
     navItems() {
       return [
-        {
-          name: "Trang Cá Nhân",
-          path: "/admin/profile",
-          iconPath: "M8 3.5a.5.5 0 0 1 .5.5v4h3.5a.5.5 0 0 1 0 1H8a.5.5 0 0 1-.5-.5V4a.5.5 0 0 1 .5-.5z M8 1a7 7 0 1 1 0 14A7 7 0 0 1 8 1zM1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8z",
-        },
+        // {
+        //   name: "Trang Cá Nhân",
+        //   path: "/admin/profile",
+        //   iconPath: "M8 3.5a.5.5 0 0 1 .5.5v4h3.5a.5.5 0 0 1 0 1H8a.5.5 0 0 1-.5-.5V4a.5.5 0 0 1 .5-.5z M8 1a7 7 0 1 1 0 14A7 7 0 0 1 8 1zM1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8z",
+        // },
         {
           name: "Quản Lý Công Việc",
           path: "/admin/task/all",

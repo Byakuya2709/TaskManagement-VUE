@@ -1,14 +1,10 @@
 <template>
-  <Alert
-    :show="alert.show"
-    :type="alert.type"
-    :message="alert.message"
-    @close-alert="hideAlert"
-  />
   <div class="card task-card">
     <div class="card-body">
       <div class="button-group">
-        <button class="btn btn-warning mx-2" @click="updateTask">Cập nhật</button>
+        <button class="btn btn-warning mx-2" @click="updateTask">
+          Cập nhật
+        </button>
         <button class="btn btn-danger" @click="deleteTask">Xóa</button>
       </div>
       <h5 class="card-title task-title">{{ task.title }}</h5>
@@ -26,7 +22,9 @@
         </div>
         <div class="row mt-3">
           <div class="col-12 text-center">
-            <span class="badge" :class="taskBadges(task.status)">{{ task.status }}</span>
+            <span class="badge" :class="taskBadges(task.status)">{{
+              task.status
+            }}</span>
           </div>
         </div>
       </div>
@@ -49,7 +47,12 @@
       <div class="comments-section">
         <h5>Bình luận</h5>
         <p v-if="comments.length === 0">Chưa có bình luận nào.</p>
-        <div v-else v-for="comment in comments" :key="comment.id" class="comment">
+        <div
+          v-else
+          v-for="comment in comments"
+          :key="comment.id"
+          class="comment"
+        >
           <p>
             <strong>{{ comment.userName }}:</strong> {{ comment.content }}
           </p>
@@ -63,21 +66,14 @@
 
 <script>
 import { api } from "../api/Api";
-import Alert from "../components/Alert.vue";
 
 export default {
   name: "TaskDetail",
-  components: { Alert },
   data() {
     return {
       task: {},
       comments: [],
       newComment: "",
-      alert: {
-        show: false,
-        type: "",
-        message: "",
-      },
     };
   },
   created() {
@@ -91,7 +87,9 @@ export default {
         this.task = res.data.data;
       } catch (error) {
         console.error(error);
-        this.showAlert("Error", error.response?.data?.message || "An unexpected error occurred.");
+        this.$toast.error(
+          error.response?.data?.message || "An unexpected error occurred."
+        );
       }
     },
     async fetchComments() {
@@ -108,7 +106,7 @@ export default {
         }));
       } catch (error) {
         console.error(error);
-        this.showAlert("Error", "Failed to load comments.");
+        this.$toast.error("Failed to load comments.");
       }
     },
     async postComment() {
@@ -119,9 +117,10 @@ export default {
           `/comment/task/${this.$route.params.taskId}`,
           {
             content: this.newComment,
-            userId: this.userId 
+            userId: this.userId,
           }
         );
+        console.log(res)
         const newComment = res.data.data;
         this.comments.push({
           id: newComment.id,
@@ -131,10 +130,12 @@ export default {
           userId: newComment.userId,
           taskId: newComment.taskId,
         });
-        this.newComment = ""; 
+        this.newComment = "";
+        
+        this.$toast.success(res.data.message);
       } catch (error) {
         const message = error.response?.data?.message || error;
-        this.showAlert("Error", message);
+        this.$toast.error(message);
       }
     },
     async updateTask() {
@@ -147,36 +148,24 @@ export default {
       }
       try {
         await api.delete(`/admin/task/${this.task.id}`);
-        this.showAlert("Success", "Task deleted successfully!");
+        this.$toast.success("Task deleted successfully!");
         this.$router.replace({ name: "Tasks" }); // Redirect after deletion
       } catch (error) {
         console.log(error);
-        this.showAlert("Error", error.response.data.message);
+        this.$toast.error(error.response.data.message);
       }
-    },
-    showAlert(type, message) {
-      this.alert.show = true;
-      this.alert.type = type;
-      this.alert.message = message;
-
-      setTimeout(() => {
-        this.alert.show = false;
-      }, 3000);
-    },
-    hideAlert() {
-      this.alert.show = false;
     },
     formatDate(date) {
       return new Date(date).toLocaleDateString();
     },
     formatDateTime(date) {
-      return new Date(date).toLocaleString('vi-VN', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
+      return new Date(date).toLocaleString("vi-VN", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
       });
     },
     taskBadges(status) {
@@ -192,7 +181,7 @@ export default {
     userId() {
       return this.$authStore.userId;
     },
-  }
+  },
 };
 </script>
 

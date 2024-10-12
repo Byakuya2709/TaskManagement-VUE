@@ -69,10 +69,10 @@
                         </p>
                         <div class="collapse" id="collapsePolicy">
                             <ul class="policy-list" style="list-style-type: decimal; margin-left: -1rem;">
-                                <li class="policy-item"><router-link href="">Chính sách bảo mật</router-link></li>
-                                <li class="policy-item"><router-link href="">FAQ</router-link></li>
-                                <li class="policy-item"><router-link href="">Chính sách Bảo hành & Đổi trả</router-link></li>
-                                <li class="policy-item"><router-link href="">Chính sách giao hàng</router-link></li>
+                                <li class="policy-item"><a href="">Chính sách bảo mật</a></li>
+                                <li class="policy-item"><a href="">FAQ</a></li>
+                                <li class="policy-item"><a href="">Chính sách Bảo hành & Đổi trả</a></li>
+                                <li class="policy-item"><a href="">Chính sách giao hàng</a></li>
                             </ul>
 
                         </div>

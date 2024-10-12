@@ -3,6 +3,7 @@ import { api } from '../api/Api';
 import { removeAuthorization, setAuthorization } from "../api/Api";
 import { jwtDecode } from 'jwt-decode';  
 import { useToast } from "vue-toastification";
+import router from "@/router/index";
 
 const toast = useToast();
 
@@ -38,12 +39,11 @@ export const useAuthStore = defineStore('auth', {
     },
     async login(user) {
       try {
-        await this.logout(); // Đăng xuất trước khi đăng nhập
         const response = await api.post('/auth/login', user);
         const res = response.data;
     
-        // Ghi log dữ liệu trả về từ API
-        console.log('Dữ liệu trả về từ API:', res);
+        // // Ghi log dữ liệu trả về từ API
+        // console.log('Dữ liệu trả về từ API:', res);
     
         this.token = res.data.token;
         const decodedToken = jwtDecode(this.token);
@@ -93,7 +93,14 @@ export const useAuthStore = defineStore('auth', {
         });
 
         localStorage.removeItem('token');
+        localStorage.removeItem('avatar');
         removeAuthorization();
+        toast.info("Đang chuyển sang trang đăng nhập")
+        setTimeout(() => {
+          router.replace('/login').then(() => {
+            window.location.reload(); // Reload after navigating to the login page
+          });
+        }, 3000);
       } catch (err) {
         toast.error(err.response.data.message);
         this.error = "Đăng xuất không thành công. Vui lòng thử lại.";

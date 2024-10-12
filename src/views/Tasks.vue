@@ -1,13 +1,5 @@
 <template>
   <div class="task-list container">
-    <!-- Alert Component -->
-    <Alert
-      :show="alert.show"
-      :type="alert.type"
-      :message="alert.message"
-      @close-alert="hideAlert"
-    />
-
     <h2 class="text-center">Danh sách công việc</h2>
 
     <!-- Task List -->
@@ -27,21 +19,14 @@
 <script>
 import TaskComponent from "../components/Task.vue"; // Adjust the import path as needed
 import { api } from "../api/Api";
-import Alert from "../components/Alert.vue";
 
 export default {
   components: {
     TaskComponent,
-    Alert,
   },
   data() {
     return {
       tasks: [],
-      alert: {
-        show: false,
-        type: "",
-        message: "",
-      },
     };
   },
   created() {
@@ -55,7 +40,7 @@ export default {
         this.tasks = res.data.data;
       } catch (error) {
         console.log(error);
-        this.showAlert("Error", error.response.data.message);
+        this.$toast.error(error.response.data.message); // Use toast for error messages
       }
     },
 
@@ -68,32 +53,18 @@ export default {
     async handleDeleteTask(task) {
       const confirmed = confirm("Are you sure you want to delete this task?");
       if (!confirmed) {
-        // Nếu người dùng không xác nhận, dừng quá trình xóa
+        // If the user does not confirm, stop the delete process
         return;
       }
       try {
         await api.delete(`/admin/task/${task.id}`);
         // Remove the task from the list
         this.tasks = this.tasks.filter((t) => t.id !== task.id);
-        this.showAlert("Success", "Task deleted successfully!");
+        this.$toast.success("Task deleted successfully!"); // Use toast for success messages
       } catch (error) {
         console.log(error);
-        this.showAlert("Error", error.response.data.message);
+        this.$toast.error(error.response.data.message); // Use toast for error messages
       }
-    },
-
-    // Show alert
-    showAlert(type, message) {
-      this.alert = {
-        show: true,
-        type: type,
-        message: message,
-      };
-    },
-
-    // Hide alert
-    hideAlert() {
-      this.alert.show = false;
     },
   },
 };

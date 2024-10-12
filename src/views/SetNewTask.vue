@@ -1,11 +1,5 @@
 <template>
   <div>
-    <Alert
-      :show="alert.show"
-      :type="alert.type"
-      :message="alert.message"
-      @close-alert="hideAlert"
-    />
     <form @submit.prevent="createTask">
       <div class="mb-3">
         <label for="title" class="form-label">Title</label>
@@ -50,6 +44,7 @@
           Date is required.
         </div>
       </div>
+      
       <div class="mb-3">
         <label for="userId" class="form-label">Nhân viên:</label>
         <select
@@ -96,14 +91,9 @@
 
 <script>
 import { api } from "../api/Api";
-import Alert from "../components/Alert.vue";
 
 export default {
   name: "SetNewTask",
-  components: {
-    Alert,
-  },
-  
   data() {
     return {
       users: [],
@@ -112,12 +102,6 @@ export default {
       date: "",
       status: "",
       userId: "",
-
-      alert: {
-        show: false,
-        type: "",
-        message: "",
-      },
 
       validate: {
         title: false,
@@ -137,12 +121,12 @@ export default {
         const res = await api.get("/admin/user/all");
         this.users = res.data.data;
       } catch (error) {
-        this.showAlert("Error", error.response.data.message);
+        this.$toast.error(error.response.data.message); // Use toast for error messages
       }
     },
     async createTask() {
       if (!this.isValidated) {
-        this.showAlert("Error", "Please fill out all required fields.");
+        this.$toast.error("Please fill out all required fields."); // Use toast for error messages
         return;
       }
 
@@ -155,17 +139,13 @@ export default {
           userId: this.userId,
         };
         const res = await api.post("/admin/task/new", formData);
-        console.log(res);
-        this.showAlert("Success", res.data.message);
-        this.$toast.success(res.data.message)
+        this.$toast.success(res.data.message); // Use toast for success messages
       } catch (error) {
-        console.log(error);
-        this.showAlert("Error", error.response.data.message);
+        this.$toast.error(error.response.data.message); // Use toast for error messages
       }
     },
     validateTitle(value) {
       this.validate.title = value.length >= 6;
-      console.log(this.validate.title);
     },
     validateDescription(value) {
       this.validate.description = value.length >= 10;
@@ -178,14 +158,6 @@ export default {
     },
     validateUser(value) {
       this.validate.user = !!value;
-    },
-    showAlert(type, message) {
-      this.alert.type = type;
-      this.alert.message = message;
-      this.alert.show = true;
-    },
-    hideAlert() {
-      this.alert.show = false;
     },
   },
   watch: {
@@ -202,8 +174,8 @@ export default {
       this.validateStatus(value);
     },
     userId(value) {
-    this.validateUser(value);
-  },
+      this.validateUser(value);
+    },
   },
   computed: {
     isValidated() {

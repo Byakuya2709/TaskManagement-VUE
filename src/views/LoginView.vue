@@ -1,11 +1,6 @@
 <template>
   <div class="login bg-light">
-    <Alert
-      :show="alert.show"
-      :type="alert.type"
-      :message="alert.message"
-      @close-alert="hideAlert"
-    />
+    
     <div class="d-flex justify-content-center align-items-center vh-100">
       <div class="d-flex max-w-4xl mt-5">
         <div class="bg-white p-4 border border-dark">
@@ -54,11 +49,11 @@
           </form>
         </div>
         <div class="form-img">
-          <a href="index.html"
+          <router-link to="/"
             ><img src="/src/assets/data/img/sign/logo.png" alt=""
-          /></a>
-          <a title="Sign-up" href="signup.html" class="sign-link mt-3"
-            >Đăng Ký</a
+          /></router-link>
+          <router-link title="Sign-up" to="/signup" class="sign-link mt-3"
+            >Đăng Ký</router-link
           >
         </div>
       </div>
@@ -66,24 +61,16 @@
   </div>
 </template>
 <script>
-import Alert from "../components/Alert.vue";
+
 import { api } from "../api/Api";
 import { useAuthStore } from "../stores/pina";
 export default {
   name: "Login",
-  components: {
-    Alert,
-  },
   data() {
     return {
       email: "",
       password: "",
       validated: [],
-      alert: {
-        show: false,
-        type: "",
-        message: "",
-      },
     };
   },
   watch: {
@@ -103,7 +90,7 @@ export default {
     //   ...mapActions(["login"]),
     async loginUser() {
       if (!this.isValidated) {
-        this.showAlert("Error", "Please fill out all required fields.");
+        this.$toast.error("Please fill out all required fields.");
         return;
       }
       try {
@@ -114,23 +101,18 @@ export default {
         const authStore = useAuthStore();
 
         const res = await authStore.login(user);
-        console.log(res)
-        if (res.data.status === "OK") {
-          this.showAlert(
-            "Success",
-            res.data.message + " . Đang chuyển sang trang quản lý"
-          );
-          setTimeout(() => {
-            this.$router.push("/manager/profile");
-          }, 2000);
-        } else {
-          this.showAlert("Info", res.data.message);
-        }
+        console.log(res);
+        if (res.status === 200) {
+      this.$toast.success(res.data.message);
+      setTimeout(() => {
+        this.$router.push("/admin").then(()=>   window.location.reload())
+      }, 2000);
+    } else {
+      this.$toast.warning(res.data.message);
+    }
       } catch (error) {
-        this.showAlert(
-          "Error",
-          error.message || "An unexpected error occurred"
-        );
+        console.log(error)
+        this.$toast.error(error.response?.data?.message || "An error occurred");
       }
     },
     validateEmail(value) {
@@ -139,16 +121,6 @@ export default {
     },
     validatePassword(value) {
       this.validated["password"] = /^(?=.*[a-z])(?=.*\d).{8,}$/.test(value);
-    },
-    showAlert(type, message) {
-      this.alert = {
-        show: true,
-        type: type,
-        message: message,
-      };
-    },
-    hideAlert() {
-      this.alert.show = false;
     },
   },
 };

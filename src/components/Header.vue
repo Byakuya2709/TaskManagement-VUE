@@ -6,7 +6,7 @@
      >
        <div class="container-fluid">
          <router-link class="logo-brand" to="/">
-           <span><p>THE UNDER</p></span>
+           <span><p>COMPANY</p></span>
          </router-link>
          <button
            class="navbar-toggler"
@@ -26,7 +26,7 @@
          >
            <div class="offcanvas-header">
              <h5 class="offcanvas-title logo-brand" id="offcanvasNavbarLabel">
-               THE UNDER
+              COMPANY
              </h5>
              <button
                type="button"
@@ -37,7 +37,7 @@
            </div>
            <div class="offcanvas-body">
              <ul class="navbar-nav ms-4">
-               <li class="menu-item">
+               <!-- <li class="menu-item">
                  <div class="dropdown">
                    <router-link class="menu-link link-active" to="/shop"
                      >SHOP</router-link
@@ -80,7 +80,7 @@
                      >NEWS</router-link
                    >
                  </div>
-               </li>
+               </li> -->
                <li class="menu-item">
                  <div class="dropdown">
                    <router-link class="menu-link link-active" to="/about"
@@ -134,10 +134,10 @@
                  <i onclick="" class="fa-solid fa-magnifying-glass"></i>
                </form>
                <span class="cart-value">
-                 <router-link to="/cart" class="btn-shopping_cart">
+                 <!-- <router-link to="/cart" class="btn-shopping_cart">
                    <i class="fa-solid fa-cart-shopping"></i>
                    <span class="cart-quantity">0</span>
-                 </router-link>
+                 </router-link> -->
                </span>
              </div>
            </div>
@@ -166,12 +166,6 @@
      const logout = async () => {
        try {
          await authStore.logout();
-         setTimeout(() => {
-          router.push('/login').then(() => {
-          window.location.reload(); // Reload sau khi chuyển đến trang login
-        });
-}, 4000)
-        
        } catch (error) {
         this.$toast.error(error)
        }

@@ -30,7 +30,7 @@
       >
         <h5>{{ task.title }}</h5>
         <p>{{ task.description }}</p>
-        <p><strong>Nhân viên:</strong> {{ task.userName }}</p>
+        <!-- <p><strong>Nhân viên:</strong> {{ task.userName }}</p> -->
         <p><strong>Ngày tới hạn:</strong> {{ formatDate(task.date) }}</p>
         <span class="badge" :class="taskBadges(task)">{{ task.status }}</span>
       </div>

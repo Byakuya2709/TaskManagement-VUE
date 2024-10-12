@@ -1,11 +1,5 @@
 <template>
   <div>
-    <Alert
-      :show="alert.show"
-      :type="alert.type"
-      :message="alert.message"
-      @close-alert="hideAlert"
-    />
     <form @submit.prevent="createTask">
       <div class="mb-3">
         <label for="title" class="form-label">Title</label>
@@ -79,25 +73,17 @@
 
 <script>
 import { api } from "../api/Api";
-import Alert from "../components/Alert.vue";
-import { useAuthStore } from "../stores/pina";
+
 export default {
   name: "NewTask",
-  components: {
-    Alert,
-  },
-
+ 
   data() {
     return {
       title: "",
       description: "",
       date: "",
       status: "", 
-      alert: {
-        show: false,
-        type: "",
-        message: "",
-      },
+      
 
       validate: {
         title: false,
@@ -113,7 +99,7 @@ export default {
   methods: {
     async createTask() {
       if (!this.isValidated) {
-        this.showAlert("Error", "Please fill out all required fields.");
+        this.$toast.error("Please fill out all required fields.");
         return;
       }
       try {
@@ -127,7 +113,7 @@ export default {
         console.log(formData)
         const res = await api.post("/user/task/newtask", formData);
         console.log(res);
-        this.showAlert("Success", res.data.message);
+        this.$toast.success(res.data.message);
       } catch (error) {
         console.log(error);
         this.$toast.error(error.response.data.message)
@@ -144,14 +130,6 @@ export default {
     },
     validateStatus(value) {
       this.validate.status = !!value;
-    },
-    showAlert(type, message) {
-      this.alert.type = type;
-      this.alert.message = message;
-      this.alert.show = true;
-    },
-    hideAlert() {
-      this.alert.show = false;
     },
   },
   watch: {
