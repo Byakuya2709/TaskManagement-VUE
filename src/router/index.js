@@ -52,6 +52,12 @@ const router = createRouter({
       component: () => import('../views/AdminView.vue'),
       children: [
         {
+          path: '',
+          name: 'Dashboard',
+          component: () => import('@/views/DashBoard.vue'),
+          alias: 'dashboard', // Cung cấp alias cho route này
+        },
+        {
           path: 'task/all',
           name: 'AdminTasks',  // Unique name for the route
           component: () => import('../views/Tasks.vue')

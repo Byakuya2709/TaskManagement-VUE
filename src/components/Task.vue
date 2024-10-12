@@ -7,11 +7,15 @@
       <hr>
       <div class="container task-details">
         <div class="row">
-          <div class="col-6 text-left">
-            <strong>Nhân viên:</strong> {{ task.userName }}
+          
+          <div class="col-6 text-right">
+            <strong>Ngày tạo công việc:</strong> {{ formatDate(task.createdDate) }}
           </div>
           <div class="col-6 text-right">
             <strong>Ngày tới hạn:</strong> {{ formatDate(task.date) }}
+          </div>
+          <div class="col-6 text-left">
+            <strong>Nhân viên:</strong> {{ task.userName }}
           </div>
         </div>
         <div class="row mt-3">

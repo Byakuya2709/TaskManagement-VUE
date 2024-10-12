@@ -1,7 +1,18 @@
 <template>
   <div class="user-list">
     <h2>User List</h2>
-    <div v-for="user in users" :key="user.id" class="user-card">
+
+    <!-- Filter by Status -->
+    <div class="filter-container mb-3">
+      <label for="status-filter">Lọc theo trạng thái:</label>
+      <select id="status-filter" v-model="selectedStatus" @change="filterUsers">
+        <option value="">Tất cả</option>
+        <option value="ACTIVE">Hoạt động</option>
+        <option value="INACTIVE">Không hoạt động</option>
+      </select>
+    </div>
+
+    <div v-for="user in filteredUsers" :key="user.id" class="user-card">
       <div class="d-flex align-items-center">
         <img
           :src="'data:image/png;base64,' + user.base64Image"
@@ -14,6 +25,7 @@
           <p><strong>Birthdate:</strong> {{ formatDate(user.birth) }}</p>
           <p><strong>Gender:</strong> {{ user.gender }}</p>
           <p><strong>Detail:</strong> {{ user.detail }}</p>
+          <p><strong>Status:</strong> {{ user.status }}</p>
         </div>
       </div>
       <div class="management-btn">
@@ -30,6 +42,7 @@
     </div>
   </div>
 </template>
+
 <script>
 import { api } from "../api/Api";
 
@@ -37,7 +50,17 @@ export default {
   data() {
     return {
       users: [],
+      selectedStatus: "", // Trạng thái được chọn để lọc
     };
+  },
+  computed: {
+    // Tạo một mảng người dùng đã được lọc dựa trên trạng thái đã chọn
+    filteredUsers() {
+      if (!this.selectedStatus) {
+        return this.users; // Nếu không có trạng thái nào được chọn, trả về tất cả người dùng
+      }
+      return this.users.filter(user => user.status === this.selectedStatus);
+    },
   },
   created() {
     this.fetchAllUser();
@@ -54,7 +77,7 @@ export default {
     viewUserInfo(user) {
       this.$router.replace({
         name: "UserProfile",
-        params: { userId: user.id}
+        params: { userId: user.id }
       });
     },
     assignTask(user) {
@@ -64,9 +87,14 @@ export default {
       const options = { year: "numeric", month: "long", day: "numeric" };
       return new Date(dateString).toLocaleDateString(undefined, options);
     },
+    // Phương thức lọc (có thể không cần nếu đã dùng computed)
+    filterUsers() {
+      // Nếu cần thực hiện một hành động khi lọc thì thêm ở đây
+    },
   },
 };
 </script>
+
 
 <style>
 .user-list {
@@ -75,25 +103,29 @@ export default {
   gap: 20px;
 }
 
+.filter-container {
+  margin-bottom: 20px;
+}
+
 .user-card {
   border: 1px solid #ccc;
   padding: 20px;
   border-radius: 8px;
   background-color: #f9f9f9;
-  display: flex; /* Sử dụng flexbox cho card */
-  justify-content: space-between; /* Để căn chỉnh phần tử */
-  align-items: center; /* Căn giữa các phần tử theo chiều dọc */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .user-body {
-  margin-left: 4rem; /* Khoảng cách giữa hình ảnh và thông tin người dùng */
-  flex-grow: 1; /* Để phần thân người dùng chiếm không gian còn lại */
+  margin-left: 4rem;
+  flex-grow: 1;
 }
 
 .management-btn {
   display: flex;
-  flex-direction: column; /* Đặt các nút theo chiều dọc */
-  align-items: center; /* Căn chỉnh các nút về bên phải */
+  flex-direction: column;
+  align-items: center;
 }
 
 .avatar {
@@ -102,6 +134,7 @@ export default {
   border-radius: 50%;
   object-fit: cover;
 }
+
 .btn-custom {
   width: 140px;
   padding: 10px 20px;
@@ -110,3 +143,4 @@ export default {
   color: white;
 }
 </style>
+
