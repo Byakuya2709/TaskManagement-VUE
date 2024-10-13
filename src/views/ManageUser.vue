@@ -50,7 +50,7 @@ export default {
   data() {
     return {
       users: [],
-      selectedStatus: "", // Trạng thái được chọn để lọc
+      selectedStatus:  this.$route.query.status || '', // Trạng thái được chọn để lọc
     };
   },
   computed: {
@@ -59,7 +59,7 @@ export default {
       if (!this.selectedStatus) {
         return this.users; // Nếu không có trạng thái nào được chọn, trả về tất cả người dùng
       }
-      return this.users.filter(user => user.status === this.selectedStatus);
+      return this.users.filter((user) => user.status === this.selectedStatus);
     },
   },
   created() {
@@ -77,11 +77,13 @@ export default {
     viewUserInfo(user) {
       this.$router.replace({
         name: "UserProfile",
-        params: { userId: user.id }
+        params: { userId: user.id },
       });
     },
     assignTask(user) {
-      alert(`Assigning task to ${user.fullname}`);
+      this.$router.replace({
+        path: `/admin/newtask/${user.id}`,
+      });
     },
     formatDate(dateString) {
       const options = { year: "numeric", month: "long", day: "numeric" };
@@ -89,12 +91,15 @@ export default {
     },
     // Phương thức lọc (có thể không cần nếu đã dùng computed)
     filterUsers() {
-      // Nếu cần thực hiện một hành động khi lọc thì thêm ở đây
+      if (this.selectedStatus) {
+        this.$router.push({ query: { status: this.selectedStatus } });
+      } else {
+        this.$router.push({ query: null });
+      }
     },
   },
 };
 </script>
-
 
 <style>
 .user-list {
@@ -143,4 +148,3 @@ export default {
   color: white;
 }
 </style>
-

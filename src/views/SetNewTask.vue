@@ -114,6 +114,7 @@ export default {
   },
   created() {
     this.fetchAllUser();
+    this.setUserIdFromParam();
   },
   methods: {
     async fetchAllUser() {
@@ -122,6 +123,14 @@ export default {
         this.users = res.data.data;
       } catch (error) {
         this.$toast.error(error.response.data.message); // Use toast for error messages
+      }
+    },
+    setUserIdFromParam() {
+      const userId = this.$route.params.id;
+
+      if (userId) {
+        this.userId = userId;
+        this.validateUser(userId);
       }
     },
     async createTask() {

@@ -8,6 +8,7 @@
           class="form-control"
           id="title"
           v-model="title"
+          disabled
           :class="{ 'is-invalid': !validate.title }"
         />
         <div v-if="!validate.title" class="invalid-feedback">

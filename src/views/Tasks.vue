@@ -5,7 +5,7 @@
     <!-- Filter by Status -->
     <div class="text-left mb-3">
       <label for="status-filter">Lọc theo trạng thái:</label>
-      <select id="status-filter" v-model="selectedStatus" @change="filterTasks">
+      <select id="status-filter" v-model="selectedStatus" @change="updateQuery">
         <option value="">Tất cả</option>
         <option value="COMPLETED">Hoàn thành</option>
         <option value="IN_PROGRESS">Đang thực hiện</option>
@@ -16,7 +16,7 @@
 
     <!-- Task List -->
     <div class="row">
-      <div v-for="task in filteredTasks" :key="task.title" class="col-md-4 mb-3">
+      <div v-for="task in filteredTasks" :key="task.id" class="col-md-4 mb-3">
         <TaskComponent
           :task="task"
           @deleteTask="handleDeleteTask"
@@ -26,7 +26,6 @@
     </div>
   </div>
 </template>
-
 
 <script>
 import TaskComponent from "../components/Task.vue";
@@ -39,13 +38,13 @@ export default {
   data() {
     return {
       tasks: [],
-      selectedStatus: "", // Trạng thái được chọn để lọc
+      selectedStatus: this.$route.query.status || '', // Lấy trạng thái từ query
     };
   },
   computed: {
-    // Tạo một mảng các công việc đã được lọc dựa trên trạng thái đã chọn
     filteredTasks() {
       if (!this.selectedStatus) {
+        
         return this.tasks; // Nếu không có trạng thái nào được chọn, trả về tất cả công việc
       }
       return this.tasks.filter(task => task.status === this.selectedStatus);
@@ -64,26 +63,12 @@ export default {
         this.$toast.error(error.response.data.message);
       }
     },
-    handleEditTask(task) {
-      this.$router.push({ name: "EditTask", params: { id: task.id } });
-    },
-    async handleDeleteTask(task) {
-      const confirmed = confirm("Are you sure you want to delete this task?");
-      if (!confirmed) {
-        return;
+    updateQuery() {
+      if (this.selectedStatus) {
+        this.$router.push({ query: { status: this.selectedStatus } });
+      } else {
+        this.$router.push({ query: null });
       }
-      try {
-        await api.delete(`/admin/task/${task.id}`);
-        this.tasks = this.tasks.filter((t) => t.id !== task.id);
-        this.$toast.success("Task deleted successfully!");
-      } catch (error) {
-        console.log(error);
-        this.$toast.error(error.response.data.message);
-      }
-    },
-    // Phương thức lọc (có thể không cần vì đã dùng computed)
-    filterTasks() {
-      // Nếu cần thực hiện một hành động khi lọc thì thêm ở đây
     },
   },
 };
@@ -105,4 +90,3 @@ export default {
   border: 1px solid #ccc;
 }
 </style>
-

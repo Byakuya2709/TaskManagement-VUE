@@ -15,11 +15,6 @@ const router = createRouter({
       component: () => import('../views/AboutView.vue')
     },
     {
-      path: '/product/new',
-      name: 'productForm',
-      component: () => import('../views/ProductAddForm.vue')
-    },
-    {
       path: '/signup',
       name: 'Register',
       component: () => import('../views/RegisterView.vue')
@@ -58,8 +53,9 @@ const router = createRouter({
           alias: 'dashboard', // Cung cấp alias cho route này
         },
         {
-          path: 'task/all',
+          path: 'manage/tasks',
           name: 'AdminTasks',  // Unique name for the route
+          query:'',
           component: () => import('../views/Tasks.vue')
         },
         {
@@ -73,17 +69,17 @@ const router = createRouter({
           component: () => import('../views/EditTask.vue')
         },
         {
-          path: 'newtask',
           name: 'SetNewTask',
+          path: 'newtask/:id?',
           component: () => import('../views/SetNewTask.vue')
         },
         {
-          path: 'management/user',
-          name: 'ManagementUser',
-          component: () => import('../views/ManagementUser.vue')
+          path: 'manage/employees',
+          name: 'ManageUser',
+          component: () => import('../views/ManageUser.vue')
         },
         {
-          path: 'management/user/:userId',
+          path: 'manage/employee/:userId',
           name: 'UserProfile',
           component: () => import('../views/UserProfile.vue')
         }
