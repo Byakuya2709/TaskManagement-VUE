@@ -44,8 +44,29 @@
           Date is required.
         </div>
       </div>
-      
+
       <div class="mb-3">
+        <label for="taskAssignment" class="form-label">Phân công cho:</label>
+        <div>
+          <input
+            type="radio"
+            id="assignUser"
+            value="user"
+            v-model="assignmentType"
+          />
+          <label for="assignUser">Nhân viên</label>
+
+          <input
+            type="radio"
+            id="assignGroup"
+            value="group"
+            v-model="assignmentType"
+          />
+          <label for="assignGroup">Nhóm</label>
+        </div>
+      </div>
+
+      <div v-if="assignmentType === 'user'" class="mb-3">
         <label for="userId" class="form-label">Nhân viên:</label>
         <select
           class="form-select"
@@ -63,6 +84,24 @@
         </div>
       </div>
 
+      <div v-if="assignmentType === 'group'" class="mb-3">
+        <label for="groupId" class="form-label">Nhóm:</label>
+        <select
+          class="form-select"
+          id="groupId"
+          v-model="groupId"
+          :class="{ 'is-invalid': !validate.group }"
+        >
+          <option value="" disabled>Select a group</option>
+          <option v-for="group in groups" :key="group.id" :value="group.id">
+            {{ group.name }}
+          </option>
+        </select>
+        <div v-if="!validate.group && !groupId" class="invalid-feedback">
+          Group is required.
+        </div>
+      </div>
+
       <div class="mb-3">
         <label for="status" class="form-label">Status</label>
         <select
@@ -74,7 +113,6 @@
           <option value="" disabled>Select status</option>
           <option value="PENDING">Pending</option>
           <option value="IN_PROGRESS">In Progress</option>
-          <!-- <option value="COMPLETED">Completed</option> -->
           <option value="CANCELED">Canceled</option>
         </select>
         <div v-if="!validate.status && !status" class="invalid-feedback">
@@ -97,11 +135,14 @@ export default {
   data() {
     return {
       users: [],
+      groups: [], // Danh sách nhóm
       title: "",
       description: "",
       date: "",
       status: "",
       userId: "",
+      groupId: "", // ID nhóm được chọn
+      assignmentType: "user", // Phân công cho nhân viên hoặc nhóm
 
       validate: {
         title: false,
@@ -109,11 +150,13 @@ export default {
         date: false,
         status: false,
         user: false,
+        group: false,
       },
     };
   },
   created() {
     this.fetchAllUser();
+    this.fetchAllGroups(); // Gọi API để tải danh sách nhóm
     this.setUserIdFromParam();
   },
   methods: {
@@ -121,6 +164,14 @@ export default {
       try {
         const res = await api.get("/admin/user/all");
         this.users = res.data.data;
+      } catch (error) {
+        this.$toast.error(error.response.data.message); // Use toast for error messages
+      }
+    },
+    async fetchAllGroups() {
+      try {
+        const res = await api.get("/admin/group/all"); // Thay đổi API phù hợp
+        this.groups = res.data.data; // Giả định 'data' chứa danh sách nhóm
       } catch (error) {
         this.$toast.error(error.response.data.message); // Use toast for error messages
       }
@@ -145,13 +196,28 @@ export default {
           description: this.description,
           date: this.date,
           status: this.status,
-          userId: this.userId,
+          userId:
+            this.assignmentType === "group"
+              ? this.getLeaderIdFromGroup(this.groupId)
+              : this.userId, // Sử dụng ID của leader nếu là nhóm
         };
+
+        console.log("Form Data:", formData); // Log dữ liệu để kiểm tra
+
         const res = await api.post("/admin/task/new", formData);
+        console.log("Response:", res.data); // Log phản hồi để kiểm tra
+
         this.$toast.success(res.data.message); // Use toast for success messages
       } catch (error) {
-        this.$toast.error(error.response.data.message); // Use toast for error messages
+        console.error("Error:", error); // Log lỗi để kiểm tra
+        this.$toast.error(
+          error.response ? error.response.data.message : "An error occurred."
+        ); // Cập nhật thông báo lỗi
       }
+    },
+    getLeaderIdFromGroup(groupId) {
+      const group = this.groups.find((group) => group.id === groupId);
+      return group ? group.leader.leaderId : null; // Trả về ID của leader hoặc null nếu không tìm thấy
     },
     validateTitle(value) {
       this.validate.title = value.length >= 6;
@@ -167,6 +233,9 @@ export default {
     },
     validateUser(value) {
       this.validate.user = !!value;
+    },
+    validateGroup(value) {
+      this.validate.group = !!value;
     },
   },
   watch: {
@@ -185,6 +254,9 @@ export default {
     userId(value) {
       this.validateUser(value);
     },
+    groupId(value) {
+      this.validateGroup(value);
+    },
   },
   computed: {
     isValidated() {
@@ -193,7 +265,9 @@ export default {
         this.validate.description &&
         this.validate.date &&
         this.validate.status &&
-        this.validate.user
+        (this.assignmentType === "user"
+          ? this.validate.user
+          : this.validate.group) // Kiểm tra xác thực dựa trên kiểu phân công
       );
     },
   },

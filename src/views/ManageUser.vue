@@ -26,6 +26,7 @@
           <p><strong>Gender:</strong> {{ user.gender }}</p>
           <p><strong>Detail:</strong> {{ user.detail }}</p>
           <p><strong>Status:</strong> {{ user.status }}</p>
+          <p><strong>Group:</strong> {{ user.groupName }}</p>
         </div>
       </div>
       <div class="management-btn">

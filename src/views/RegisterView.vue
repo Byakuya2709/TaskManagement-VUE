@@ -300,6 +300,7 @@ export default {
     },
 
     async registerUser() {
+    console.log(this.birth)
       await this.getVerificationCode(); // Gọi phương thức nhận OTP trước tiên
     },
     async completeRegistration() {
