@@ -25,6 +25,11 @@ const router = createRouter({
       component: () => import('../views/LoginView.vue')
     },
     {
+      path: '/forgot-password',
+      name: 'ForgotPassword',
+      component: () => import('../views/ForgotPassword.vue')
+    },
+    {
       path: '/user',
       name: 'User',
       component: () => import('../views/UserView.vue'),
@@ -55,7 +60,7 @@ const router = createRouter({
         {
           path: 'manage/tasks',
           name: 'AdminTasks',  // Unique name for the route
-          query:'',
+          query: '',
           component: () => import('../views/Tasks.vue')
         },
         {

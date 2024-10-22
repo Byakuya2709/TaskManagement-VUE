@@ -1,7 +1,5 @@
 <template>
   <div class="register bg-light">
-
-
     <!-- Modal to enter OTP -->
     <div
       v-if="showOtpModal"
@@ -286,7 +284,7 @@ export default {
     },
     async verifyOtp() {
       this.loading = true;
-      const data = { email: this.email, code: this.otp };
+      const data = { email: this.email, code: this.otp, type: "registration" };
       try {
         const res = await api.post("/auth/verify", data);
         this.$toast.success(res.data.message); // Success message after OTP verification
@@ -300,7 +298,7 @@ export default {
     },
 
     async registerUser() {
-    console.log(this.birth)
+      console.log(this.birth);
       await this.getVerificationCode(); // Gọi phương thức nhận OTP trước tiên
     },
     async completeRegistration() {
@@ -389,11 +387,24 @@ export default {
     previewImage(event) {
       const input = event.target;
       if (input.files && input.files[0]) {
+        const file = input.files[0]; // Lấy tệp hình ảnh từ input
+
+        const maxSizeInBytes = 2 * 1024 * 1024; // 2MB
+        if (file.size > maxSizeInBytes) {
+          this.$toast.error(
+            "Kích thước tệp quá lớn. Vui lòng chọn tệp nhỏ hơn 2MB."
+          ); // Hiển thị thông báo lỗi
+          this.imagePreview = ""; // Xóa hình ảnh đã xem trước nếu kích thước lớn
+          return;
+        }
+
         const reader = new FileReader();
         reader.onload = (e) => {
-          this.imagePreview = e.target.result;
+          this.imagePreview = e.target.result; // Cập nhật hình ảnh xem trước
         };
-        reader.readAsDataURL(input.files[0]);
+        reader.readAsDataURL(file); // Đọc tệp hình ảnh
+      } else {
+        this.imagePreview = ""; // Xóa preview nếu không có hình ảnh được chọn
       }
     },
   },

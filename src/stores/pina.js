@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { api } from '../api/Api';
 import { removeAuthorization, setAuthorization } from "../api/Api";
-import { jwtDecode } from 'jwt-decode';  
+import { jwtDecode } from 'jwt-decode';
 import { useToast } from "vue-toastification";
 import router from "@/router/index";
 
@@ -33,7 +33,7 @@ export const useAuthStore = defineStore('auth', {
             name: decodedToken.userName,
             email: decodedToken.sub
           },
-          avatar:localStorage.getItem('avatar')
+          avatar: localStorage.getItem('avatar')
         });
       }
     },
@@ -41,17 +41,17 @@ export const useAuthStore = defineStore('auth', {
       try {
         const response = await api.post('/auth/login', user);
         const res = response.data;
-    
+
         // // Ghi log dữ liệu trả về từ API
         // console.log('Dữ liệu trả về từ API:', res);
-    
+
         this.token = res.data.token;
         const decodedToken = jwtDecode(this.token);
         this.role = decodedToken.role;
-    
+
         const avatar = res.data.avatar ? `data:image/png;base64,${res.data.avatar}` : null;
         localStorage.setItem('avatar', avatar);
-    
+
         // Cập nhật state
         this.$patch({
           user: {
@@ -62,11 +62,11 @@ export const useAuthStore = defineStore('auth', {
           role: decodedToken.role,
           token: this.token,
         });
-    
-    
+
+
         localStorage.setItem('token', this.token);
         setAuthorization(this.token);
-    
+
         this.error = null; // Reset error
         return response;
       } catch (err) {
@@ -87,13 +87,14 @@ export const useAuthStore = defineStore('auth', {
         // Cập nhật lại state khi đăng xuất
         this.$patch({
           token: null,
-          user: { id: null, name: '', email: '' }, 
+          user: { id: null, name: '', email: '' },
           role: null,
           avatar: null, // Reset avatar khi đăng xuất
         });
 
         localStorage.removeItem('token');
         localStorage.removeItem('avatar');
+        localStorage.removeItem('_grecaptcha');
         removeAuthorization();
         toast.info("Đang chuyển sang trang đăng nhập")
         setTimeout(() => {

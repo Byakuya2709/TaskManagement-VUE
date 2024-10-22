@@ -14,7 +14,7 @@ import { far } from '@fortawesome/free-regular-svg-icons';
 library.add(fas, far, fab);
 dom.watch();
 import storePlugin from './plugins/store';
-import {jwtDecode} from 'jwt-decode';  // Sử dụng thư viện jwt-decode
+import { jwtDecode } from 'jwt-decode';  // Sử dụng thư viện jwt-decode
 import { removeAuthorization, setAuthorization } from "./api/Api";
 
 // Importing necessary Chart.js components (if needed globally)
@@ -36,7 +36,7 @@ if (token) {
   try {
     const decodedToken = jwtDecode(token);
     const currentTime = Math.floor(Date.now() / 1000); // Thời gian hiện tại (tính bằng giây)
-    
+
     // Kiểm tra xem token đã hết hạn chưa
     if (decodedToken.exp < currentTime) {
       console.log("Token has expired. Logging out...");
@@ -50,6 +50,7 @@ if (token) {
   } catch (error) {
     console.error("Error decoding token:", error);
     localStorage.removeItem('token');
+    localStorage.removeItem('_grecaptcha');
     removeAuthorization();
   }
 } else {
@@ -61,6 +62,8 @@ app.use(Toast, {
   timeout: 4000,
   closeOnClick: true,
 });
+
+
 app.use(ToastPlugin);
 app.use(createPinia());
 app.use(router);
