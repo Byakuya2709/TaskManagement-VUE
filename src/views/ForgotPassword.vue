@@ -9,9 +9,6 @@
           <div class="mb-3">
             <label for="email" class="form-label">Nhập vào Email</label>
             <input type="email" v-model="email" class="form-control" required />
-            <p v-if="errorMessage" class="text-danger mt-2">
-              {{ errorMessage }}
-            </p>
           </div>
           <button type="submit" class="btn btn-primary">Gửi Mã OTP</button>
         </form>
@@ -21,10 +18,8 @@
           <div class="mb-3">
             <label for="otp" class="form-label">Nhập Mã OTP</label>
             <input type="text" v-model="otp" class="form-control" required />
-            <p v-if="errorMessage" class="text-danger mt-2">
-              {{ errorMessage }}
-            </p>
           </div>
+          <p class="info" v-if="step2">Mã OTP đã được gửi đến email của bạn.</p>
           <button type="submit" class="btn btn-primary">Xác Thực Mã OTP</button>
         </form>
 
@@ -40,23 +35,39 @@
               class="form-control"
               required
             />
-            <p v-if="errorMessage" class="text-danger mt-2">
-              {{ errorMessage }}
+            <p v-if="!validated.password" class="text-danger mt-1">
+              Mật khẩu phải gồm ít nhất 8 kí tự bao gồm chữ thường/HOA và 1 số.
             </p>
           </div>
-          <button type="submit" class="btn btn-primary">Đổi Mật Khẩu</button>
+          <div class="mb-3">
+            <label for="confirmPassword" class="form-label"
+              >Xác Nhận Mật Khẩu Mới</label
+            >
+            <input
+              type="password"
+              v-model="confirmPassword"
+              class="form-control"
+              required
+            />
+            <p v-if="!validated.passwordConfirm" class="text-danger mt-1">
+              Vui lòng nhập đúng lại mật khẩu đã nhập.
+            </p>
+          </div>
+          <button
+            type="submit"
+            class="btn btn-primary"
+            :disabled="!isValidated"
+          >
+            Đổi Mật Khẩu
+          </button>
         </form>
-
-        <p v-if="successMessage" class="text-success mt-2">
-          {{ successMessage }}
-        </p>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { api } from "../api/Api"; // Đường dẫn API
+import { api } from "../api/Api";
 
 export default {
   name: "EmailVerification",
@@ -66,9 +77,26 @@ export default {
       email: "",
       otp: "",
       newPassword: "",
-      successMessage: "",
-      errorMessage: "",
+      confirmPassword: "",
+      validated: {
+        password: false,
+        passwordConfirm: false,
+      },
+      step2: false,
     };
+  },
+  computed: {
+    isValidated() {
+      return this.validated.password && this.validated.passwordConfirm;
+    },
+  },
+  watch: {
+    newPassword(value) {
+      this.validatePassword(value);
+    },
+    confirmPassword(value) {
+      this.validatePasswordConfirm(value);
+    },
   },
   methods: {
     async sendOtp() {
@@ -76,13 +104,12 @@ export default {
         const response = await api.post("/auth/account/check", {
           email: this.email,
         });
-        this.successMessage = response.data.message;
-        this.errorMessage = "";
-        this.step = 2; // Chuyển sang bước nhập OTP
+        this.$toast.success(response.data.message);
+        this.step = 2; // Chuyển đến bước tiếp theo
       } catch (error) {
-        this.errorMessage =
-          error.response?.data?.message || "Đã xảy ra lỗi. Vui lòng thử lại.";
-        this.successMessage = "";
+        this.$toast.error(
+          error.response?.data?.message || "Đã xảy ra lỗi. Vui lòng thử lại."
+        );
       }
     },
     async verifyOtp() {
@@ -90,29 +117,44 @@ export default {
         const response = await api.post("/auth/account/verify", {
           email: this.email,
           code: this.otp,
+          type: "reset",
         });
-        this.successMessage = response.data.message;
-        this.errorMessage = "";
-        this.step = 3; // Chuyển sang bước nhập mật khẩu mới
+        this.$toast.success(response.data.message);
+        this.step = 3; // Chuyển đến bước tiếp theo
       } catch (error) {
-        this.errorMessage =
-          error.response?.data?.message || "Mã OTP không hợp lệ.";
-        this.successMessage = "";
+        this.$toast.error(
+          error.response?.data?.message || "Mã OTP không hợp lệ."
+        );
       }
     },
     async resetPassword() {
+      if (!this.isValidated) {
+        return; // Ngăn việc gửi nếu có lỗi
+      }
+
       try {
         const response = await api.post("/auth/account/resetpassword", {
           email: this.email,
           newPassword: this.newPassword,
         });
-        this.successMessage = response.data.message;
-        this.errorMessage = "";
+        this.$toast.success(response.data.message);
+        setTimeout(() => {
+          this.$router.replace("/login").then(() => {
+            window.location.reload(); // Reload after navigating to the login page
+          });
+        }, 2000);
       } catch (error) {
-        this.errorMessage =
-          error.response?.data?.message || "Đã xảy ra lỗi khi đổi mật khẩu.";
-        this.successMessage = "";
+        this.$toast.error(
+          error.response?.data?.message || "Đã xảy ra lỗi khi đổi mật khẩu."
+        );
       }
+    },
+    validatePassword(value) {
+      const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+      this.validated.password = passwordPattern.test(value);
+    },
+    validatePasswordConfirm(value) {
+      this.validated.passwordConfirm = value === this.newPassword;
     },
   },
 };

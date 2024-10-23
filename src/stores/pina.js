@@ -101,7 +101,7 @@ export const useAuthStore = defineStore('auth', {
           router.replace('/login').then(() => {
             window.location.reload(); // Reload after navigating to the login page
           });
-        }, 3000);
+        }, 2000);
       } catch (err) {
         toast.error(err.response.data.message);
         this.error = "Đăng xuất không thành công. Vui lòng thử lại.";
