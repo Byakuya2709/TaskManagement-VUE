@@ -2,20 +2,25 @@
   <div @click="goToTaskDetail" class="card task-card">
     <div class="card-body">
       <h5 class="card-title task-title">{{ task.title }}</h5>
-      <hr>
+      <hr />
       <p class="card-text task-description">{{ task.description }}</p>
-      <hr>
+      <hr />
       <div class="container task-details">
         <div class="row">
-          
           <div class="col-6 text-right">
-            <strong>Ngày tạo công việc:</strong> {{ formatDate(task.createdDate) }}
+            <strong>Ngày tạo công việc:</strong>
+            {{ formatDate(task.createdDate) }}
           </div>
           <div class="col-6 text-right">
-            <strong>Ngày tới hạn:</strong> {{ formatDate(task.date) }}
+            <strong>Ngày hoàn thành:</strong> {{ formatDate(task.date) }}
           </div>
+          <div class="col-6 text-right">
+            <strong>Lần cuối cập nhật:</strong>
+            {{ formatDate(task.updatedDate) }}
+          </div>
+
           <div class="col-6 text-left">
-            <strong>Nhân viên:</strong> {{ task.userName }}
+            <strong>Chịu trách nhiệm:</strong> {{ task.userName }}
           </div>
         </div>
         <div class="row mt-3">
@@ -24,15 +29,15 @@
           </div>
         </div>
       </div>
-      <hr>
+      <hr />
       <div class="d-flex justify-content-center">
-         <!-- Use @click.stop to prevent the click event from the parent div -->
+        <!-- Use @click.stop to prevent the click event from the parent div -->
         <button @click.stop="editTask" class="btn btn-custom-primary mx-2">
           Cập nhật
         </button>
-        <button @click.stop="deleteTask" class="btn btn-custom-danger mx-2">
+        <!-- <button @click.stop="deleteTask" class="btn btn-custom-danger mx-2">
           Xóa
-        </button>
+        </button> -->
       </div>
     </div>
   </div>
@@ -53,20 +58,23 @@ export default {
     editTask() {
       this.$emit("editTask", this.task);
     },
-    deleteTask() {
-      this.$emit("deleteTask", this.task);
-    },
+    // deleteTask() {
+    //   this.$emit("deleteTask", this.task);
+    // },
     goToTaskDetail() {
-      this.$router.push({ name: 'TaskDetail', params: { taskId: this.task.id } });
-    }
+      this.$router.push({
+        name: "TaskDetail",
+        params: { taskId: this.task.id },
+      });
+    },
   },
   computed: {
     statusBadge() {
       return {
-        'badge-success': this.task.status === 'COMPLETED',
-        'badge-warning': this.task.status === 'PENDING',
-        'badge-danger': this.task.status === 'CANCELED',
-        'badge-info': this.task.status === 'IN_PROGRESS',
+        "badge-success": this.task.status === "COMPLETED",
+        "badge-warning": this.task.status === "PENDING",
+        "badge-danger": this.task.status === "CANCELED",
+        "badge-info": this.task.status === "IN_PROGRESS",
       };
     },
   },

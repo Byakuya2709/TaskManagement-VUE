@@ -2,7 +2,7 @@
   <div>
     <form @submit.prevent="editTask">
       <div class="mb-3">
-        <label for="title" class="form-label">Title</label>
+        <label for="title" class="form-label">Tiêu đề:</label>
         <input
           type="text"
           class="form-control"
@@ -12,12 +12,13 @@
           :class="{ 'is-invalid': !validate.title }"
         />
         <div v-if="!validate.title" class="invalid-feedback">
-          Title is required and should be at least 6 characters.
+          <!-- Title is required and should be at least 6 characters. -->
+          Tiêu đề không được ít hơn 6 kí tự.
         </div>
       </div>
 
       <div class="mb-3">
-        <label for="description" class="form-label">Description</label>
+        <label for="description" class="form-label">Mô tả:</label>
         <textarea
           class="form-control"
           id="description"
@@ -25,12 +26,13 @@
           :class="{ 'is-invalid': !validate.description }"
         ></textarea>
         <div v-if="!validate.description" class="invalid-feedback">
-          Description is required and should be at least 10 characters.
+          <!-- Description is required and should be at least 10 characters.  -->
+          Mô tả không được ít hơn 10 kí tự.
         </div>
       </div>
 
       <div class="mb-3">
-        <label for="date" class="form-label">Date</label>
+        <label for="date" class="form-label">Ngày hoàn thành:</label>
         <input
           type="date"
           class="form-control"
@@ -39,7 +41,7 @@
           :class="{ 'is-invalid': !validate.date }"
         />
         <div v-if="!validate.date" class="invalid-feedback">
-          Date is required.
+          Ngày hoàn thành không được bỏ trống.
         </div>
       </div>
 
@@ -57,12 +59,12 @@
           </option>
         </select>
         <div v-if="!validate.user" class="invalid-feedback">
-          User is required.
+          Nhân viên thực hiện tác vụ không được bỏ trống.
         </div>
       </div>
 
       <div class="mb-3">
-        <label for="status" class="form-label">Status</label>
+        <label for="status" class="form-label">Trạng thái:</label>
         <select
           class="form-select"
           id="status"
@@ -76,12 +78,12 @@
           <option value="CANCELED">Canceled</option>
         </select>
         <div v-if="!validate.status" class="invalid-feedback">
-          Status is required.
+          Trạng thái tác vụ không được bỏ trống.
         </div>
       </div>
 
       <button type="submit" class="btn btn-primary" :disabled="!isValidated">
-        Update Task
+        Cập nhật
       </button>
     </form>
   </div>
@@ -162,10 +164,13 @@ export default {
           status: this.status,
           userId: this.userId,
         };
-        const res = await api.put(`/admin/task/update/${this.task.id}`, formData);
+        const res = await api.put(
+          `/admin/task/update/${this.task.id}`,
+          formData
+        );
         this.$toast.success(res.data.message); // Use toast for success messages
         setTimeout(() => {
-          this.$router.push("/admin/task/all");
+          this.$router.push("/admin/manage/tasks");
         }, 2000);
       } catch (error) {
         this.$toast.error(error.response.data.message); // Use toast for error messages

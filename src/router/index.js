@@ -89,6 +89,16 @@ const router = createRouter({
           component: () => import('../views/ManageGroups.vue')
         },
         {
+          path: 'manage/group/new-group',
+          name: 'NewGroup',
+          component: () => import('../views/NewGroup.vue')
+        },
+        {
+          path: 'manage/group/:id/add-user',
+          name: 'NewGroup',
+          component: () => import('../views/AddToGroup.vue')
+        },
+        {
           path: 'manage/employee/:userId',
           name: 'UserProfile',
           component: () => import('../views/UserProfile.vue')

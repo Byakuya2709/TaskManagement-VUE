@@ -3,18 +3,18 @@
     <div id="logo-sidebar" class="sidebar">
       <div class="h-100 px-3 pt-4 pb-2 overflow-auto">
         <ul class="nav flex-column">
-          <div class="user-info mt-4 d-flex align-items-center" style="flex-direction: column;">
-          <img v-if="avatar" :src="avatar" alt="User Avatar" class="avatar" />
-          <div class="ms-3">
-            <p class="user-name">{{ user.name }}</p>
-            <p class="user-role" v-if="role">{{ role}}</p>
+          <div
+            class="user-info mt-4 d-flex align-items-center"
+            style="flex-direction: column"
+          >
+            <img v-if="avatar" :src="avatar" alt="User Avatar" class="avatar" />
+            <div class="ms-3">
+              <p class="user-name">{{ user.name }}</p>
+              <p class="user-role" v-if="role">{{ role }}</p>
+            </div>
           </div>
-        </div>
           <li class="nav-item mb-2" v-for="item in navItems" :key="item.name">
-            <router-link
-              :to="item.path"
-              class="nav-link"
-            >
+            <router-link :to="item.path" class="nav-link">
               <svg
                 class="bi text-secondary"
                 aria-hidden="true"
@@ -31,7 +31,6 @@
           </li>
         </ul>
         <!-- User info -->
-        
       </div>
     </div>
 
@@ -48,7 +47,7 @@ export default {
     user() {
       return this.$authStore.user;
     },
-    role(){
+    role() {
       return this.$authStore.role;
     },
     avatar() {
@@ -62,26 +61,29 @@ export default {
         //   iconPath: "M8 3.5a.5.5 0 0 1 .5.5v4h3.5a.5.5 0 0 1 0 1H8a.5.5 0 0 1-.5-.5V4a.5.5 0 0 1 .5-.5z M8 1a7 7 0 1 1 0 14A7 7 0 0 1 8 1zM1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8z",
         // },
         {
-          name: "Quản Lý Công Việc",
+          name: "Quản Lý Tác Vụ",
           path: "/admin/manage/tasks",
-          iconPath: "M2 3.5V2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v1.5h1a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1v-10a1 1 0 0 1 1-1h1zm11-1V2a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v.5H2v10h12v-10h-1z M9 8H7v4h2V8zm1-3H6v2h4V5z",
+          iconPath:
+            "M2 3.5V2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v1.5h1a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1v-10a1 1 0 0 1 1-1h1zm11-1V2a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v.5H2v10h12v-10h-1z M9 8H7v4h2V8zm1-3H6v2h4V5z",
         },
         {
           name: "Quản Lý Nhân Viên",
           path: "/admin/manage/employees",
-          iconPath: "M2 3.5V2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v1.5h1a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1v-10a1 1 0 0 1 1-1h1zm11-1V2a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v.5H2v10h12v-10h-1z M9 8H7v4h2V8zm1-3H6v2h4V5z",
+          iconPath:
+            "M2 3.5V2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v1.5h1a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1v-10a1 1 0 0 1 1-1h1zm11-1V2a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v.5H2v10h12v-10h-1z M9 8H7v4h2V8zm1-3H6v2h4V5z",
         },
         {
           name: "Quản Lý Nhóm Làm Việc",
           path: "/admin/manage/groups",
-          iconPath: "M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 .5-.5z M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zM1 8a7 7 0 1 1 14 0A7 7 0 0 1 1 8z",
+          iconPath:
+            "M2 3.5V2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v1.5h1a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1v-10a1 1 0 0 1 1-1h1zm11-1V2a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v.5H2v10h12v-10h-1z M9 8H7v4h2V8zm1-3H6v2h4V5z",
         },
         {
-          name: "Phân Công Công Việc",
+          name: "Phân Công Tác Vụ",
           path: "/admin/newtask",
-          iconPath: "M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 .5-.5z M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zM1 8a7 7 0 1 1 14 0A7 7 0 0 1 1 8z",
+          iconPath:
+            "M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 .5-.5z M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zM1 8a7 7 0 1 1 14 0A7 7 0 0 1 1 8z",
         },
-       
       ];
     },
   },

@@ -42,6 +42,7 @@ if (token) {
       console.log("Token has expired. Logging out...");
       localStorage.removeItem('token');
       localStorage.removeItem('avatar');
+      localStorage.removeItem('_grecaptcha');
       removeAuthorization();
       router.push('/login'); // Redirect to login page
     } else {

@@ -1,6 +1,6 @@
 <template>
   <div class="task-list container">
-    <h2 class="text-center">Danh sách công việc</h2>
+    <h2 class="text-center">Danh sách tác vụ</h2>
 
     <!-- Filter by Status -->
     <div class="text-left mb-3">
@@ -17,11 +17,7 @@
     <!-- Task List -->
     <div class="row">
       <div v-for="task in filteredTasks" :key="task.id" class="col-md-4 mb-3">
-        <TaskComponent
-          :task="task"
-          @deleteTask="handleDeleteTask"
-          @editTask="handleEditTask"
-        />
+        <TaskComponent :task="task" @editTask="handleEditTask" />
       </div>
     </div>
   </div>
@@ -38,16 +34,15 @@ export default {
   data() {
     return {
       tasks: [],
-      selectedStatus: this.$route.query.status || '', // Lấy trạng thái từ query
+      selectedStatus: this.$route.query.status || "", // Lấy trạng thái từ query
     };
   },
   computed: {
     filteredTasks() {
       if (!this.selectedStatus) {
-        
         return this.tasks; // Nếu không có trạng thái nào được chọn, trả về tất cả công việc
       }
-      return this.tasks.filter(task => task.status === this.selectedStatus);
+      return this.tasks.filter((task) => task.status === this.selectedStatus);
     },
   },
   created() {
@@ -70,10 +65,12 @@ export default {
         this.$router.push({ query: null });
       }
     },
+    async handleEditTask(task) {
+      this.$router.push({ name: "EditTask", params: { id: task.id } });
+    },
   },
 };
 </script>
-
 
 <style scoped>
 .task-list {

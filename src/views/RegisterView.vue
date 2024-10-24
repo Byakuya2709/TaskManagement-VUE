@@ -1,5 +1,5 @@
 <template>
-  <div class="register bg-light">
+  <div class="register bg-light" style="padding: 4rem">
     <!-- Modal to enter OTP -->
     <div
       v-if="showOtpModal"
@@ -173,7 +173,7 @@
         </div>
         <div class="custom-file">
           <label class="custom-file-label" for="imageUpload"
-            >Upload Image:</label
+            >Tải hình ảnh lên:</label
           >
           <input
             class="custom-file-input"

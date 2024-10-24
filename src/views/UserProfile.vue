@@ -11,16 +11,16 @@
         class="avatar"
       />
       <h1>{{ user.fullname }}</h1>
-      <p><strong>Address:</strong> {{ user.address }}</p>
-      <p><strong>Birthdate:</strong> {{ formatDate(user.birth) }}</p>
-      <p><strong>Gender:</strong> {{ user.gender }}</p>
-      <p><strong>Detail:</strong> {{ user.detail }}</p>
+      <p><strong>Địa chỉ:</strong> {{ user.address }}</p>
+      <p><strong>Ngày sinh:</strong> {{ formatDate(user.birth) }}</p>
+      <p><strong>Giới tính:</strong> {{ translateGender(user.gender) }}</p>
+      <p><strong>Thông tin chi tiết:</strong> {{ user.detail }}</p>
     </div>
 
     <div class="tasks">
-      <h2>Tasks</h2>
+      <h2>Tác vụ:</h2>
       <div v-if="tasks.length === 0" class="no-tasks">
-        <p>No tasks assigned.</p>
+        <p>Không có tác vụ nào được phân công.</p>
       </div>
       <div
         @click="goToTaskDetail(task.id)"
@@ -31,7 +31,7 @@
         <h5>{{ task.title }}</h5>
         <p>{{ task.description }}</p>
         <!-- <p><strong>Nhân viên:</strong> {{ task.userName }}</p> -->
-        <p><strong>Ngày tới hạn:</strong> {{ formatDate(task.date) }}</p>
+        <p><strong>Ngày hoàn thành:</strong> {{ formatDate(task.date) }}</p>
         <span class="badge" :class="taskBadges(task)">{{ task.status }}</span>
       </div>
     </div>
@@ -75,14 +75,24 @@ export default {
       }
     },
     goToTaskDetail(taskId) {
-        this.$router.replace({
+      this.$router.replace({
         name: "TaskDetail",
-        params: { taskId: taskId}
+        params: { taskId: taskId },
       });
     },
     formatDate(dateString) {
       const options = { year: "numeric", month: "long", day: "numeric" };
       return new Date(dateString).toLocaleDateString(undefined, options);
+    },
+    translateGender(gender) {
+      switch (gender) {
+        case "FEMALE":
+          return "Nữ";
+        case "MALE":
+          return "Nam";
+        default:
+          return "Không rõ"; // Trả về "Không rõ" nếu không phải là "FEMALE" hoặc "MALE"
+      }
     },
     taskBadges(task) {
       return {
@@ -148,6 +158,4 @@ h2 {
   text-align: center;
   color: #6c757d;
 }
-
-
 </style>

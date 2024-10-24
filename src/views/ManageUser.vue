@@ -1,6 +1,6 @@
 <template>
   <div class="user-list">
-    <h2>User List</h2>
+    <h2>Danh Sách Nhân Viên</h2>
 
     <!-- Filter by Status -->
     <div class="filter-container mb-3">
@@ -21,12 +21,12 @@
         />
         <div class="user-body">
           <h3>{{ user.fullname }}</h3>
-          <p><strong>Address:</strong> {{ user.address }}</p>
-          <p><strong>Birthdate:</strong> {{ formatDate(user.birth) }}</p>
-          <p><strong>Gender:</strong> {{ user.gender }}</p>
-          <p><strong>Detail:</strong> {{ user.detail }}</p>
-          <p><strong>Status:</strong> {{ user.status }}</p>
-          <p><strong>Group:</strong> {{ user.groupName }}</p>
+          <p><strong>Địa chỉ:</strong> {{ user.address }}</p>
+          <p><strong>Ngày sinh:</strong> {{ formatDate(user.birth) }}</p>
+          <p><strong>Giới tính:</strong> {{ translateGender(user.gender) }}</p>
+          <!-- <p><strong>Detail:</strong> {{ user.detail }}</p>
+          <p><strong>Status:</strong> {{ user.status }}</p> -->
+          <p><strong>Nhóm:</strong> {{ user.groupName }}</p>
         </div>
       </div>
       <div class="management-btn">
@@ -51,7 +51,7 @@ export default {
   data() {
     return {
       users: [],
-      selectedStatus:  this.$route.query.status || '', // Trạng thái được chọn để lọc
+      selectedStatus: this.$route.query.status || "", // Trạng thái được chọn để lọc
     };
   },
   computed: {
@@ -96,6 +96,16 @@ export default {
         this.$router.push({ query: { status: this.selectedStatus } });
       } else {
         this.$router.push({ query: null });
+      }
+    },
+    translateGender(gender) {
+      switch (gender) {
+        case "FEMALE":
+          return "Nữ";
+        case "MALE":
+          return "Nam";
+        default:
+          return "Không rõ"; // Trả về "Không rõ" nếu không phải là "FEMALE" hoặc "MALE"
       }
     },
   },

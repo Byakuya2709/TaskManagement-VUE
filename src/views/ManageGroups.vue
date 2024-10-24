@@ -1,5 +1,11 @@
 <template>
   <div class="group-list">
+    <div class="button-group">
+      <button class="btn btn-warning mx-2" @click="createGroup">
+        Tạo Nhóm
+      </button>
+      <!-- <button class="btn btn-danger" @click="deleteGroup">Xóa</button> -->
+    </div>
     <h2>Danh sách nhóm làm việc</h2>
 
     <div v-for="group in groups" :key="group.id" class="group-card">
@@ -7,7 +13,7 @@
         <div class="leader-info">
           <div class="leader-details">
             <h3>{{ group.name }}</h3>
-            <p><strong>Description:</strong> {{ group.description }}</p>
+            <p><strong>Mô tả:</strong> {{ group.description }}</p>
             <div class="d-flex">
               <img
                 v-if="group.leader.leaderAvatar"
@@ -22,8 +28,10 @@
                 class="avatar"
               />
               <div class="leader-avatar">
-                <p><strong>Leader:</strong> {{ group.leader.leaderName }}</p>
-                <p><strong>ID:</strong>{{ group.leader.leaderId }}</p>
+                <p>
+                  <strong>Nhóm trưởng:</strong> {{ group.leader.leaderName }}
+                </p>
+                <p><strong>Mã:</strong>{{ group.leader.leaderId }}</p>
               </div>
             </div>
           </div>
@@ -32,38 +40,50 @@
 
       <!-- Show user details only when group is expanded -->
       <div v-if="expandedGroupId === group.id" class="user-list">
-        <h4>Thành viên</h4>
-        <div
-          v-for="user in group.listUser"
-          :key="user.userId"
-          class="user-card"
-        >
-          <img
-            v-if="user.userAvatar"
-            :src="'data:image/png;base64,' + user.userAvatar"
-            alt="User Avatar"
-            class="avatar"
-          />
-          <img
-            v-else
-            src="../../src/assets/data/img/deafaultAvatar.png"
-            alt="Placeholder Leader Avatar"
-            class="avatar"
-          />
-          <div class="user-body">
-            <h5>{{ user.userFullname }}</h5>
-            <p><strong>User ID:</strong> {{ user.userId }}</p>
-          </div>
-          <div class="management-btn">
-            <button
-              class="btn btn-custom btn-info mb-2"
-              @click="viewUserInfo(user)"
+        <div class="user-header">
+          <h4>Thành viên</h4>
+          <button class="btn btn-success" @click="addUserToGroup(group.id)">
+            Thêm thành viên
+          </button>
+        </div>
+        <div class="user-list-container">
+          <div class="users">
+            <div
+              v-for="user in group.listUser"
+              :key="user.userId"
+              class="user-card"
             >
-              Thông tin
-            </button>
-            <button class="btn btn-custom btn-danger" @click="assignTask(user)">
-              Giao việc
-            </button>
+              <img
+                v-if="user.userAvatar"
+                :src="'data:image/png;base64,' + user.userAvatar"
+                alt="User Avatar"
+                class="avatar"
+              />
+              <img
+                v-else
+                src="../../src/assets/data/img/deafaultAvatar.png"
+                alt="Placeholder Leader Avatar"
+                class="avatar"
+              />
+              <div class="user-body">
+                <h5>{{ user.userFullname }}</h5>
+                <p><strong>Mã nhân viên:</strong> {{ user.userId }}</p>
+              </div>
+              <div class="management-btn">
+                <button
+                  class="btn btn-custom btn-info mb-2"
+                  @click="viewUserInfo(user)"
+                >
+                  Thông tin
+                </button>
+                <button
+                  class="btn btn-custom btn-danger"
+                  @click="assignTask(user)"
+                >
+                  Giao việc
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -108,6 +128,13 @@ export default {
         path: `/admin/newtask/${user.userId}`,
       });
     },
+    createGroup() {
+      this.$router.replace({ path: `/admin/manage/group/new-group` });
+    },
+    // Phương thức mới để thêm người dùng vào nhóm
+    addUserToGroup(groupId) {
+      this.$router.replace({ path: `/admin/manage/group/${groupId}/add-user` });
+    },
   },
 };
 </script>
@@ -149,6 +176,20 @@ export default {
   padding-top: 10px;
 }
 
+.user-header {
+  display: flex;
+  justify-content: space-between; /* Align title and button */
+  align-items: center; /* Center align items vertically */
+}
+
+.user-list-container {
+  margin-top: 10px; /* Optional: Add margin above the user list */
+}
+
+.users {
+  margin-top: 10px; /* Optional: Add margin above the user cards */
+}
+
 .user-card {
   display: flex;
   align-items: center;
@@ -159,6 +200,12 @@ export default {
 .user-body {
   flex-grow: 1;
   margin-left: 2rem;
+}
+
+.button-group {
+  display: flex;
+  justify-content: flex-end; /* Align buttons to the right */
+  margin-bottom: 15px;
 }
 
 .management-btn {
@@ -174,6 +221,7 @@ export default {
   border-radius: 25px;
   color: white;
 }
+
 .leader-avatar {
   margin-left: 1rem;
 }

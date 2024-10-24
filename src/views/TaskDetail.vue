@@ -13,11 +13,20 @@
       <hr />
       <div class="container task-details">
         <div class="row">
-          <div class="col-6 text-left">
-            <strong>Nhân viên:</strong> {{ task.userName }}
+          <div class="col-6 text-right">
+            <strong>Ngày tạo công việc:</strong>
+            {{ formatDate(task.createdDate) }}
           </div>
           <div class="col-6 text-right">
-            <strong>Ngày tới hạn:</strong> {{ formatDate(task.date) }}
+            <strong>Ngày hoàn thành:</strong> {{ formatDate(task.date) }}
+          </div>
+          <div class="col-6 text-right">
+            <strong>Lần cuối cập nhật:</strong>
+            {{ formatDate(task.updatedDate) }}
+          </div>
+
+          <div class="col-6 text-left">
+            <strong>Chịu trách nhiệm:</strong> {{ task.userName }}
           </div>
         </div>
         <div class="row mt-3">
@@ -120,7 +129,7 @@ export default {
             userId: this.userId,
           }
         );
-        console.log(res)
+        console.log(res);
         const newComment = res.data.data;
         this.comments.push({
           id: newComment.id,
@@ -131,7 +140,7 @@ export default {
           taskId: newComment.taskId,
         });
         this.newComment = "";
-        
+
         this.$toast.success(res.data.message);
       } catch (error) {
         const message = error.response?.data?.message || error;
